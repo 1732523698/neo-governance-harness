@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:audit_result",
+  "title": "NEO 4.0 AUDIT_RESULT",
+  "_home": "./NEO_SESSION/<slug>/audit/AUDIT_RESULT.json (per-subsession; sibling to AUDIT_BUNDLE.json)",
+  "_status": "INSTALLED 4.0-P3-A (from the KEPT 4.0 Session-0 draft, P0.1/F4). Live spine schema. AUTHORITY-BEARING: its `recommendation` fills SUBSESSION_END_REPORT.auditor_recommendation_slot, so it is schema-checked like every other authority artifact.",
+  "_reconcile": "CORRECTION (P0.1/F4): there is NO `audit_result.schema.json` predating this install in the 12-schema spine — the earlier D3 claim that it 'reconciles with spine audit_result.json' was stale and removed. Its neutral artifact CLASS is `evidence` (the cold auditor's produced output), matching the live artifact_classes.json `evidence` glob for `audit_result.json`; it binds to governance only through the common provenance envelope's gate_ref (neo:artifact_provenance convention).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["result_id", "recommendation", "findings", "rehash_check", "auditor_identity", "_provenance"],
+  "properties": {
+    "result_id": { "type": "string", "minLength": 1 },
+    "recommendation": {
+      "type": "string",
+      "enum": ["GO", "NEEDS-MORE", "NO-GO"],
+      "description": "The cold auditor's verdict. Fills SUBSESSION_END_REPORT.auditor_recommendation_slot.recommendation (D2). Must be NO-GO when rehash_check.all_members_matched=false (see below)."
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["severity", "statement", "evidence_ref"],
+        "properties": {
+          "severity": { "type": "string", "enum": ["blocking", "high", "medium", "low", "info"] },
+          "statement": { "type": "string", "minLength": 1 },
+          "evidence_ref": { "type": "string", "description": "Reference to the bundle member the finding is grounded in (root-relative). Auditor cites artifacts, never master narrative (D3 §1)." }
+        }
+      },
+      "description": "May be empty for a clean GO. A NO-GO/NEEDS-MORE with an empty findings array is invalid in spirit; downstream gates should treat it as fail-closed (A7)."
+    },
+    "rehash_check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["all_members_matched", "mismatches"],
+      "properties": {
+        "all_members_matched": { "type": "boolean", "description": "TRUE iff every allowlisted bundle member re-hashed to its recorded content_hash." },
+        "mismatches": { "type": "array", "items": { "type": "string" }, "description": "Root-relative member paths whose re-hash did not match. Non-empty => all_members_matched MUST be false." }
+      },
+      "description": "Bundle-integrity gate (D3 §3). FAIL-CLOSED (A7): if all_members_matched=false, `recommendation` MUST be NO-GO and mismatches MUST name the offending members."
+    },
+    "auditor_identity": { "type": "string", "minLength": 1, "description": "Identity of the independent cold auditor. Distinct from the builder/master (isolation, D3 §1)." },
+    "_provenance": { "$ref": "neo:common_provenance_envelope" }
+  }
+}

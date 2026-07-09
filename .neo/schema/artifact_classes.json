@@ -1,0 +1,74 @@
+{
+  "class_map_schema_id": "neo:artifact_classes",
+  "title": "NEO 3.1-F Governed Artifact Class Map (producer/validator separation)",
+  "version": "3.1-F-P4S0F1",
+  "description": "Assigns every governed artifact to exactly one CLASS by filename/path glob (first matching rule wins; unmatched -> default_class). Judging classes are constraint | test_harness | profile_risk; a builder may not co-modify an implementation-class artifact and a judging-class artifact that grades it in one gated slice (verify_app_slice AS18). Globs are matched against the normalized changed path AND its leaf. Ratified P1-S3: all 18 .neo/scripts classified explicitly (no default catch-all for them); the 3 active role SKILL.md bodies are judging (constraint - they define the graders). Ratified P4-S0(+fix): the orchestrator enforcement engine and its shared root resolver are registered judging via orchestrator.ps1 + orch_*.ps1 + _neo_root.ps1 (test_harness); name-pattern registration covers exactly these files - additional engine helpers must be registered explicitly when introduced.",
+  "classes": ["implementation", "constraint", "test_harness", "profile_risk", "evidence"],
+  "default_class": "implementation",
+  "rules": [
+    {
+      "class": "test_harness",
+      "note": "JUDGING: validator/checker engines + fixture/proof suites that produce the verdict/evidence (13 of the 18 governed scripts + the fixture-suite pattern + P4-S0(+fix): the orchestrator enforcement engine and its shared root resolver via orchestrator.ps1, orch_*.ps1 and _neo_root.ps1; name-pattern registration covers exactly these files - additional engine helpers must be registered explicitly when introduced)",
+      "globs": [
+        "_neo_root.ps1",
+        "ambassador_check.ps1",
+        "assemble_auditor_input.ps1",
+        "c1_golden_matrix.ps1",
+        "check_app_end_evidence.ps1",
+        "contract_check.ps1",
+        "governor.ps1",
+        "lint_skills.ps1",
+        "orchestrator.ps1",
+        "orch_*.ps1",
+        "pm_consistency.ps1",
+        "regression_smoke.ps1",
+        "scenario_sim.ps1",
+        "verifier.ps1",
+        "verify_app_slice.ps1",
+        "verify_session.ps1",
+        "*_fixture_suite.ps1"
+      ]
+    },
+    {
+      "class": "constraint",
+      "note": "JUDGING: rubrics / invariants / schemas that define pass-fail, plus the 3 active role SKILL.md bodies (they define the graders / duties / gates)",
+      "globs": [
+        "*NEO_DIRECTOR/SKILL.md",
+        "*NEO_BUILDER/SKILL.md",
+        "*NEO_AUDITOR/SKILL.md",
+        "*.schema.json",
+        "artifact_classes.json"
+      ]
+    },
+    {
+      "class": "profile_risk",
+      "note": "JUDGING: per-app risk surface: profile (denylist + risk_tokens live inside it), tier/release rules",
+      "globs": [
+        "NEO_APP_PROFILE.json",
+        "NEO_APP_PROFILE.md",
+        "NEO_RISK_TIERS.md",
+        "NEO_RELEASE_DISCIPLINE.md"
+      ]
+    },
+    {
+      "class": "evidence",
+      "note": "neutral (neither impl nor judging for the co-modification rule): produced outputs + the provenance record",
+      "globs": [
+        "APP_END_EVIDENCE*.json",
+        "audit_result.json",
+        "coder_report.json",
+        "command_evidence.json",
+        "artifact_provenance.json",
+        "*.patch"
+      ]
+    },
+    {
+      "class": "implementation",
+      "note": "explicit: the 2 scaffolder scripts among the 18 governed scripts (all others of the 18 are test_harness above); everything else falls through to default_class=implementation (app source, docs, role router, tools)",
+      "globs": [
+        "new_session.ps1",
+        "slice_bundle_tool.ps1"
+      ]
+    }
+  ]
+}

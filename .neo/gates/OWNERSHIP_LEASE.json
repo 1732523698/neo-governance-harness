@@ -1,0 +1,6 @@
+{
+  "ownership_lease_schema_id": "neo:ownership_lease",
+  "root_of_trust": "provisional-dev",
+  "note": "PROVISIONAL-DEV section 4.8 ownership lease (P1-S6). Session-spanning ownership token; the OS named mutex in ownership_lease.ps1 is the real mutual-exclusion layer for acquire/release/reclaim. In dev this file is principal-writable (tamper-EVIDENT, not tamper-PROOF); non-bypassability (only the holder may write the governed surface) is Option A / S7. leases is intentionally EMPTY in the committed state: no session is holding the surface at rest.",
+  "leases": []
+}

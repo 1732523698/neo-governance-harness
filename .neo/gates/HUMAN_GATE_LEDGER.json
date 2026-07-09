@@ -1,0 +1,6 @@
+{
+  "human_gate_ledger_schema_id": "neo:human_gate_ledger",
+  "root_of_trust": "provisional-dev",
+  "note": "PROVISIONAL-DEV human-gate ledger (P1-S4 / RT4-R1, section 4.7 gate binding). This is the AUTHORITY an UNLOCK_RECORD.gate_ref must resolve to for AS4 to return PASS-WITH-AUTH. IN DEV this is a plain repo file the session principal can write, so it is tamper-EVIDENT, NOT tamper-PROOF: a builder could forge an entry here. It becomes un-forgeable only when section 4.9 (S5) puts it under a host-held root-of-trust and Option A (S6) ACLs it outside NEO's write scope; until then RT4-R1 PASS-WITH-AUTH is NOT trusted in PROD (the DEV->PROD push gate is the backstop). Append-only. gate_ref convention (OQ2): keyed to a roadmap section 8 decision-log id, e.g. '2026-06-30-P1-S3-END-KEEP'. entries is intentionally EMPTY: no RT4-R1 locked-path edit has been human-authorized yet; the P1-S4 self-test proves the mechanism against a fixture-local ledger, never this one.",
+  "entries": []
+}

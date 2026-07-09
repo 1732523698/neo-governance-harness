@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:app_end_evidence",
+  "title": "NEO App-Session END Evidence Bundle (v2.6)",
+  "description": "Evidence bundle produced by verify_app_slice.ps1 for real-app / fixture-app NEO sessions and validated by check_app_end_evidence.ps1. Mandatory whenever a session declares an app_slug, app profile, app slice, or touches modules/<app_slug>/. Every pass claim must be backed by command evidence with exit_code 0.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["app_slug", "app_name", "app_root", "mode", "head_sha", "branch", "changed_files", "classification", "forbidden_paths_touched", "migrations", "dependency_changes", "commands", "i18n_parity", "secret_scan", "smoke", "checks", "unresolved_risks", "human_acceptance", "auditor_findings", "generated_at", "generator"],
+  "properties": {
+    "app_slug": { "type": "string", "minLength": 1 },
+    "app_name": { "type": "string", "minLength": 1 },
+    "app_root": { "type": "string", "minLength": 1 },
+    "mode": {
+      "type": "string", "enum": ["fixture", "real"],
+      "description": "fixture = validates adapter mechanics only, never certifies the external app. real = requires BOUNDARY_APPROVED yes in the app profile."
+    },
+    "fixture_pre_commit": {
+      "type": "boolean",
+      "description": "Explicit controlled exception: fixture trees have no git, so head_sha is FIXTURE-NO-GIT. Only valid when mode=fixture."
+    },
+    "head_sha": { "type": "string", "minLength": 1, "description": "Current HEAD at evidence time; must equal live HEAD at check time unless fixture_pre_commit." },
+    "branch": { "type": "string", "minLength": 1 },
+    "changed_files": {
+      "type": "array",
+      "description": "EVERY changed file in the slice (deleted files prefixed DELETED:). Must match the on-disk/git changed set at check time.",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["buckets", "derived_tier", "declared_tier", "fast_lane_requested", "fast_lane_eligible"],
+      "properties": {
+        "buckets": {
+          "type": "array", "minItems": 1,
+          "items": { "type": "string", "enum": ["docs_only", "frontend_ui", "client_logic", "backend_api", "schema_migration", "auth_permission", "dependency_config", "locked_shared", "financial_logic"] }
+        },
+        "derived_tier": { "type": "string", "enum": ["RT1", "RT2", "RT3", "RT4"] },
+        "declared_tier": { "type": "string", "enum": ["RT1", "RT2", "RT3", "RT4"], "description": "Must be >= derived_tier; classifier only upgrades risk, never downgrades." },
+        "fast_lane_requested": { "type": "boolean" },
+        "fast_lane_eligible": { "type": "boolean", "description": "Computed by the classifier; a request without eligibility is a FAIL, not an override." }
+      }
+    },
+    "forbidden_paths_touched": { "type": "boolean", "description": "true is always a FAIL surface; recorded for the human gate." },
+    "migrations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["present", "rollback_proof"],
+      "properties": {
+        "present": { "type": "boolean" },
+        "files": { "type": "array", "items": { "type": "string" } },
+        "rollback_proof": { "type": "string", "description": "Path to written rollback proof; empty string only when present=false." },
+        "staging_apply_evidence": { "type": "string" }
+      }
+    },
+    "dependency_changes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["present", "dep_guard_proof"],
+      "properties": {
+        "present": { "type": "boolean" },
+        "files": { "type": "array", "items": { "type": "string" } },
+        "dep_guard_proof": { "type": "string", "description": "Path to DEP-GUARD approval evidence; empty string only when present=false." }
+      }
+    },
+    "commands": {
+      "type": "array",
+      "description": "Self-claim guard: every claimed pass requires command, cwd, exit_code (0 for pass), timestamp, output artifact path.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "cmd", "cwd", "exit_code", "timestamp", "output_path", "status"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "cmd": { "type": "string", "minLength": 1 },
+          "cwd": { "type": "string", "minLength": 1 },
+          "exit_code": { "type": "integer" },
+          "timestamp": { "type": "string", "minLength": 1 },
+          "output_path": { "type": "string", "minLength": 1 },
+          "status": { "type": "string", "enum": ["pass", "fail", "skipped"] }
+        }
+      }
+    },
+    "i18n_parity": { "type": "string", "enum": ["pass", "fail", "not_applicable"] },
+    "secret_scan": { "type": "string", "enum": ["pass", "fail"] },
+    "smoke": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["performed", "result", "evidence"],
+      "properties": {
+        "performed": { "type": "boolean" },
+        "result": { "type": "string", "enum": ["pass", "fail", "not_performed"] },
+        "evidence": { "type": "string" }
+      }
+    },
+    "client_verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "kind", "evidence", "degraded"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "kind": { "type": "string", "enum": ["reducer_function_test", "component_unit_test", "playwright_browser", "manual_browser_proof", "none"] },
+        "evidence": { "type": "string" },
+        "degraded": { "type": "boolean", "description": "true when manual proof backs money-affecting state; requires human_acceptance entry." }
+      }
+    },
+    "checks": {
+      "type": "array", "minItems": 1,
+      "description": "Per-check verdicts from verify_app_slice.ps1 (AS1..ASn).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "status", "detail"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "name": { "type": "string", "minLength": 1 },
+          "status": { "type": "string", "enum": ["PASS", "FAIL", "NA"] },
+          "detail": { "type": "string" }
+        }
+      }
+    },
+    "unresolved_risks": { "type": "array", "items": { "type": "string" } },
+    "human_acceptance": {
+      "type": "array",
+      "description": "Explicit human (Raphael) acceptances, e.g. degraded client evidence or recorded overrides.",
+      "items": { "type": "string" }
+    },
+    "auditor_findings": {
+      "type": "array",
+      "description": "Auditor findings mapped to resolution status.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["finding", "status"],
+        "properties": {
+          "finding": { "type": "string", "minLength": 1 },
+          "status": { "type": "string", "enum": ["resolved", "accepted_risk", "open"] }
+        }
+      }
+    },
+    "generated_at": { "type": "string", "minLength": 1 },
+    "generator": { "type": "string", "minLength": 1 }
+  }
+}

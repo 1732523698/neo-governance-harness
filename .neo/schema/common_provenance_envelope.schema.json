@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:common_provenance_envelope",
+  "title": "NEO 4.0 Common Provenance/Timestamp Envelope",
+  "_status": "INSTALLED 4.0-P3-A (from the KEPT 4.0 Session-0 draft). Live spine schema. Reconciles with (does not fork) neo:artifact_provenance and neo:checkpoint.",
+  "description": "Every 4.0 hybrid structured-evidence file EMBEDS this envelope under key `_provenance`. It is the single carrier of identity, version, custody, hashing, scope, and input lineage. Fail-closed (A7): if any REQUIRED field below is missing, unknown, or unresolvable, the consuming gate/auditor MUST BLOCK and require classification/authority before proceeding — never proceed on a partial envelope.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_id", "artifact_class", "schema_id", "schema_version",
+    "producer_identity", "validator_identity", "created_at", "updated_at",
+    "content_hash", "scope_boundary", "source_input_packets", "gate_ref"
+  ],
+  "properties": {
+    "artifact_id": { "type": "string", "minLength": 1, "description": "Stable id of this evidence artifact." },
+    "artifact_class": {
+      "type": "string",
+      "description": "REUSES the live neo:artifact_classes vocabulary. Judging classes carry stricter edit gates (D6).",
+      "enum": ["implementation", "constraint", "test_harness", "profile_risk", "evidence", "input_packet", "audit_bundle", "handoff_packet", "master_checkpoint"],
+      "_reconcile": "First 5 are verbatim from .neo/schema/artifact_classes.json. The last 4 are 4.0 additive classes proposed for the routing layer; see D6/D10 reconciliation. UNKNOWN class => BLOCKED (A7)."
+    },
+    "schema_id": { "type": "string", "minLength": 1, "description": "id of the schema this artifact claims to satisfy. REQUIRED (A7): missing => BLOCKED." },
+    "schema_version": { "type": "string", "minLength": 1, "description": "Version string of that schema. REQUIRED (A7): unknown/missing => BLOCKED." },
+    "producer_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "model_class"],
+      "properties": {
+        "role": { "type": "string", "description": "NEO role that authored (e.g. builder, master-orchestrator, constraint-editor)." },
+        "model_class": { "type": "string", "enum": ["cheap_producer", "strong_producer", "validator", "auditor"], "description": "Capability CLASS (Q2 — classes bound now, exact model NAMES live in the routing-log/policy layer, not here)." },
+        "model_name": { "type": ["string", "null"], "description": "Optional concrete model name, resolved from the routing layer; nullable so the schema does not hard-code names (Q2)." }
+      },
+      "description": "REQUIRED (A7): missing/unknown producer identity => BLOCKED."
+    },
+    "validator_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "model_class"],
+      "properties": {
+        "role": { "type": "string" },
+        "model_class": { "type": "string", "enum": ["cheap_producer", "strong_producer", "validator", "auditor"] },
+        "model_name": { "type": ["string", "null"] },
+        "not_applicable_reason": { "type": ["string", "null"], "description": "Only for artifacts that legitimately have no validator yet (e.g. a raw builder proof pre-audit). A null identity WITHOUT this reason => BLOCKED (A7)." }
+      },
+      "description": "REQUIRED (A7). validator model_class MUST be >= producer model_class per D6 (validator >= producer)."
+    },
+    "created_at": { "type": "string", "description": "ISO-8601, CALLER-SUPPLIED. Mirrors neo:checkpoint convention: agents do not self-generate time." },
+    "updated_at": { "type": "string", "description": "ISO-8601, caller-supplied." },
+    "content_hash": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algo", "value"],
+      "properties": {
+        "algo": { "type": "string", "enum": ["sha256"] },
+        "value": { "type": "string", "minLength": 1 }
+      },
+      "description": "Self-hash of the artifact body (envelope excluded from its own hash input). Used by rollover stale/hash checks (A6/D7) and audit-bundle integrity (D3)."
+    },
+    "scope_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["declared_paths", "declared_surfaces"],
+      "properties": {
+        "declared_paths": { "type": "array", "items": { "type": "string" }, "description": "Root-relative './...' globs this artifact's work was confined to. Reconciles with session_contract.approved_paths (but root-relative, never absolute)." },
+        "declared_surfaces": { "type": "array", "items": { "type": "string", "enum": ["filesystem", "database", "object_storage", "external_account"] }, "description": "Mirrors session_contract.state_surfaces." }
+      }
+    },
+    "source_input_packets": {
+      "type": "array",
+      "description": "Lineage (A3): every input packet this artifact consumed, by id + content_hash. Empty array allowed only for a root spec. Reproducibility + custody.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["packet_id", "content_hash"],
+        "properties": {
+          "packet_id": { "type": "string" },
+          "content_hash": { "type": "string" }
+        }
+      }
+    },
+    "gate_ref": {
+      "type": ["string", "null"],
+      "description": "Decision-log id binding to ./.neo/gates/HUMAN_GATE_LEDGER.json. SAME convention as neo:artifact_provenance.gate_ref and neo:unlock_record.gate_ref. Null only for un-gated low-risk batched artifacts (D5); judging-class artifacts REQUIRE non-null (fail-closed)."
+    }
+  }
+}

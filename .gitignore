@@ -1,0 +1,56 @@
+# NEO public cut - .gitignore
+# Keep secrets, machine-local state, scratch, and generated/large artifacts out of the repo.
+
+# --- Secrets / credentials (NEVER commit) ---
+*.pem
+*.key
+*.crt
+id_rsa*
+*.pfx
+.env
+.env.*
+**/smtp_credential
+**/.neo_notify/
+# machine-local Claude Code permission allowlist (personal; regenerated per machine)
+.claude/settings.local.json
+
+# --- Machine-local / runtime NEO state (each install regenerates these) ---
+.claude/settings.json.baseline_original
+.neo/scripts/watchdog/state/
+**/checkpoint.json
+**/stop_reason.json
+**/model_routing_log.json
+
+# --- Session run artifacts (sessions are created at runtime under NEO_SESSION\) ---
+# Ignore runtime session dirs, but keep the shipped _neo_roadmap templates tracked.
+NEO_SESSION/**
+!NEO_SESSION/
+!NEO_SESSION/_neo_roadmap/
+!NEO_SESSION/_neo_roadmap/**
+
+# --- Scratch / temp / snapshots ---
+scratch/
+snapshots/
+*.snap
+*.tmp
+*.bak
+*.PREEDIT
+*.pre
+
+# --- OS / editor noise ---
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+*~
+.vs/
+.vscode/
+.idea/
+
+# --- Language / build noise (in case an app is added under modules\) ---
+node_modules/
+dist/
+build/
+coverage/
+__pycache__/
+*.log

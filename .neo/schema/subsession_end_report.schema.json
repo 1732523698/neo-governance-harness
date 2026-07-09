@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:subsession_end_report",
+  "title": "NEO 4.0 Sub-session END report",
+  "_home": "./NEO_SESSION/<slug>/ (per-subsession; sits beside coder_report.json, proof/, diffs/, audit/)",
+  "_status": "INSTALLED 4.0-P3-A (from the KEPT 4.0 Session-0 draft). Live spine schema. The builder's structured END evidence the master indexes and the auditor consumes (via the audit bundle, D3). Reconciles with the existing coder_report.json (evidence class) and residue_report / app_end_evidence spine schemas — SUPERSET reference, not fork.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["report_id", "slug", "changed_files", "diff_manifest", "tests_run", "skipped_or_unverified", "deferrals", "rollback_notes", "touched_flags", "auditor_recommendation_slot", "_provenance"],
+  "properties": {
+    "report_id": { "type": "string", "minLength": 1 },
+    "slug": { "type": "string" },
+    "changed_files": {
+      "type": "array",
+      "items": { "type": "object", "additionalProperties": false, "required": ["path", "sha256_after", "change_kind"], "properties": { "path": { "type": "string", "description": "Root-relative './...'." }, "sha256_after": { "type": "string" }, "change_kind": { "type": "string", "enum": ["create", "edit", "delete"] } } }
+    },
+    "diff_manifest": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["path", "diff_ref"], "properties": { "path": { "type": "string" }, "diff_ref": { "type": "string", "description": "Reference into ./NEO_SESSION/<slug>/diffs/." } } } },
+    "tests_run": {
+      "type": "array",
+      "description": "Each promised test with its actual exit code. Empty tests_run on a non-trivial slice is a fail-closed audit flag (A7).",
+      "items": { "type": "object", "additionalProperties": false, "required": ["command", "exit_code", "proof_ref"], "properties": { "command": { "type": "string" }, "exit_code": { "type": "integer" }, "proof_ref": { "type": "string", "description": "Reference into ./NEO_SESSION/<slug>/proof/." } } }
+    },
+    "skipped_or_unverified": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["item", "why"], "properties": { "item": { "type": "string" }, "why": { "type": "string" } } }, "description": "Honest disclosure surface. Silent skips are defects." },
+    "deferrals": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["id", "type", "reason", "expires_at"], "properties": { "id": { "type": "string" }, "type": { "type": "string" }, "reason": { "type": "string" }, "expires_at": { "type": "string" } } }, "description": "Typed deferrals WITH EXPIRY (D9)." },
+    "rollback_notes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["snapshot_ref", "touched_files", "dependency_changes", "migration_status", "cleanup_status"],
+      "properties": {
+        "snapshot_ref": { "type": "string", "description": "Reference into ./NEO_SESSION/<slug>/snapshots/ (rollback boundary, D8)." },
+        "touched_files": { "type": "array", "items": { "type": "string" } },
+        "dependency_changes": { "type": "array", "items": { "type": "string" } },
+        "migration_status": { "type": "string", "enum": ["none", "applied_reversible", "applied_irreversible", "pending"] },
+        "cleanup_status": { "type": "string", "enum": ["clean", "residue_reported"] }
+      }
+    },
+    "touched_flags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["touched_constraints", "touched_tests_harness", "touched_profile_risk"],
+      "properties": {
+        "touched_constraints": { "type": "boolean" },
+        "touched_tests_harness": { "type": "boolean" },
+        "touched_profile_risk": { "type": "boolean" }
+      },
+      "description": "'Did this touch constraints/tests/profile?' (v4 5.5). ANY true => this sub-session illegally co-modified a judging-class artifact unless it WAS the separately-gated constraint-edit session (D6/A4). Fail-closed: true here from a cheap-producer or impl slice => BLOCK."
+    },
+    "auditor_recommendation_slot": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["recommendation", "auditor_identity", "bundle_ref"],
+      "properties": { "recommendation": { "type": "string", "enum": ["GO", "NEEDS-MORE", "NO-GO"] }, "auditor_identity": { "type": "string" }, "bundle_ref": { "type": "string", "description": "Reference to the audit bundle the cold auditor consumed (D3)." } },
+      "description": "Filled by the INDEPENDENT auditor, not the builder. Null until audited. A high-risk END with null here => cannot pass (D4)."
+    },
+    "_provenance": { "$ref": "neo:common_provenance_envelope" }
+  }
+}

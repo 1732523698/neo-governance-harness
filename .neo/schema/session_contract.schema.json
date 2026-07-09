@@ -1,0 +1,156 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:session_contract",
+  "title": "NEO Session Contract",
+  "description": "Machine-checkable spine of a NEO sandbox session. Every role reads/writes against this. Foundation note: full JSON Schema validation is PENDING; verify_session.ps1 currently enforces the 'required' arrays via pure PowerShell.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "session_id", "goal", "tier", "approved_paths", "protected_paths",
+    "approved_operations", "destructive_ops", "budget", "model_routing_policy",
+    "test_plan", "fresh_audit_required_when", "state_surfaces",
+    "volatile_paths_ignored_in_residue", "external_accounts_registry",
+    "stop_conditions", "secret_redaction", "graduation_target"
+  ],
+  "properties": {
+    "session_id": { "type": "string", "minLength": 1 },
+    "goal": { "type": "string", "minLength": 1 },
+    "tier": { "type": "string", "enum": ["T1"], "description": "Sandbox is always T1." },
+    "approved_paths": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Globs (relative to S:\\NEO). Every edited path MUST be a strict subset of these."
+    },
+    "protected_paths": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Never-touch globs. Any edit here is a defect."
+    },
+    "approved_operations": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["create", "edit", "delete", "run_test", "run_typecheck", "snapshot"] }
+    },
+    "destructive_ops": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["delete", "overwrite", "migration", "data_mutation",
+                 "credential_or_env_write", "dependency_change", "large_rename",
+                 "generated_file_replacement"]
+      },
+      "description": "Any of these requires a pre-op snapshot artifact (checked by C4)."
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unit", "limit", "manual_pause_threshold", "provider_spend_cap_configured"],
+      "properties": {
+        "unit": { "type": "string", "enum": ["api_usd", "output_tokens"] },
+        "limit": { "type": "number", "minimum": 0 },
+        "manual_pause_threshold": { "type": "number", "minimum": 0 },
+        "provider_spend_cap_configured": {
+          "type": "boolean",
+          "description": "MUST be true before any unattended run. Provider-side (Claude API) cap, set by the human."
+        }
+      }
+    },
+    "model_routing_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mechanical", "moderate_judgment", "hard_logic_or_audit"],
+      "properties": {
+        "mechanical": { "type": "string" },
+        "moderate_judgment": { "type": "string" },
+        "hard_logic_or_audit": { "type": "string" }
+      },
+      "description": "Cheapest-capable routing. C8 checks model_routing_log entries against this."
+    },
+    "test_plan": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Exact test command(s) promised at START. Guards test-command drift (C6)."
+    },
+    "fresh_audit_required_when": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["end_gate", "graduation_candidate", "shared_utility",
+                 "external_account_use", "destructive_op", "failed_verify_recovery"]
+      },
+      "description": "Fresh-context audit triggers. Tiny throwaway experiments need none."
+    },
+    "state_surfaces": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["filesystem", "database", "object_storage", "external_account"] },
+      "minItems": 1,
+      "description": "Layer-2 residue snapshots are required for EVERY declared surface (C5). Foundation/local sessions declare ['filesystem']."
+    },
+    "volatile_paths_ignored_in_residue": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Explicit, narrow allowlist of paths excluded from before/after residue diff. Keep tight; broad entries hide real residue."
+    },
+    "external_accounts_registry": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["provider", "account_label", "environment", "human_attested_sandbox_only", "spend_cap_configured", "allowed_domains", "forbidden_real_data"],
+        "properties": {
+          "provider": { "type": "string" },
+          "account_label": { "type": "string", "minLength": 1, "description": "Human-set label, e.g. 'neo-sandbox-openai'. Must contain no production/real markers." },
+          "environment": { "type": "string", "enum": ["sandbox"], "description": "Must be 'sandbox'. Sandbox status is ATTESTED by a human, never inferred from the name." },
+          "human_attested_sandbox_only": { "type": "boolean", "description": "Human declares this is a throwaway sandbox account with no real data. P7 requires true." },
+          "spend_cap_configured": { "type": "boolean" },
+          "spend_cap_amount": { "type": "number", "minimum": 0 },
+          "allowed_domains": { "type": "array", "items": { "type": "string" } },
+          "forbidden_real_data": { "type": "boolean", "description": "Declares no real/production data may touch this account. P7 requires true." },
+          "attested_by": { "type": "string" },
+          "attested_at": { "type": "string" }
+        }
+      },
+      "description": "If non-empty, 'external_account' MUST appear in state_surfaces (C5 guard). Sandbox-only status is HUMAN-ATTESTED via explicit fields (P7), never inferred from the account name."
+    },
+    "stop_conditions": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["scope_breach", "budget_breach", "ambiguity", "external_boundary"] }
+    },
+    "secret_redaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "scan_targets"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "scan_targets": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["diffs", "logs", "checkpoint", "reports"] }
+        }
+      },
+      "description": "C9 secret scan is HEURISTIC (shape-based), not complete secret prevention."
+    },
+    "graduation_target": {
+      "type": ["string", "null"],
+      "description": "Non-null only for graduation candidates; triggers NEO_CONTRACT_CHECK."
+    },
+    "na_justifications": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Optional. END-gate only: maps a mandatory check id (C5/C6/C7/C10) to an explicit reason it may remain NA. Without an entry, NA on a mandatory check at END = FAIL."
+    },
+    "residue_keep_paths": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Optional, default empty. Globs for artifacts a test run may legitimately leave behind (e.g. dist/**, coverage/**). The verifier deletes every created file EXCEPT these. Kept files must be inside approved_paths (or NEO_SESSION) and disjoint from protected_paths (P11), and are reported as 'approved retained artifacts' — NOT counted as zero-residue. Zero residue = no UNAPPROVED residue."
+    },
+    "snapshot_limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_files": { "type": "integer", "minimum": 1 },
+        "max_total_mb": { "type": "number", "minimum": 1 },
+        "max_single_file_mb": { "type": "number", "minimum": 1 }
+      },
+      "description": "Optional. If the snapshot root exceeds any limit the verifier FAILS (blocks) with a clear reason — it never silently downgrades to a partial snapshot. Defaults applied if absent: max_files 5000, max_total_mb 500, max_single_file_mb 50."
+    }
+  }
+}

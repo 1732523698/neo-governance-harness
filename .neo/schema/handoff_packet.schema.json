@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:handoff_packet",
+  "title": "NEO 4.0 HANDOFF_PACKET",
+  "_home": "./program/HANDOFF_PACKET.json (JSON authoritative per Q1)",
+  "_status": "INSTALLED 4.0-P3-A (from the KEPT 4.0 Session-0 draft, Addendum A6). Live spine schema. Master-rollover artifact (v4 5.8). A fresh master MUST be able to resume from THIS packet ALONE. A6: last-green carried as REFERENCE + HASH + short summary, never a bulky embed; a stale/partial/ambiguous/hash-mismatched packet MUST be REJECTED (fail-closed).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["packet_id", "packet_version", "spec_ref", "constraint_package_ref", "risk_register_ref", "subsession_index_ref", "open_deferrals", "last_green_state", "next_decision", "integrity", "_provenance"],
+  "properties": {
+    "packet_id": { "type": "string", "minLength": 1 },
+    "packet_version": { "type": "string" },
+    "spec_ref": { "type": "object", "additionalProperties": false, "required": ["artifact_id", "content_hash"], "properties": { "artifact_id": { "type": "string" }, "content_hash": { "type": "string" } } },
+    "constraint_package_ref": { "type": "object", "additionalProperties": false, "required": ["artifact_id", "content_hash"], "properties": { "artifact_id": { "type": "string" }, "content_hash": { "type": "string" } } },
+    "risk_register_ref": { "type": "object", "additionalProperties": false, "required": ["artifact_id", "content_hash"], "properties": { "artifact_id": { "type": "string" }, "content_hash": { "type": "string" } } },
+    "subsession_index_ref": { "type": "object", "additionalProperties": false, "required": ["artifact_id", "content_hash"], "properties": { "artifact_id": { "type": "string" }, "content_hash": { "type": "string" } } },
+    "open_deferrals": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["id", "type", "reason", "expires_at"], "properties": { "id": { "type": "string" }, "type": { "type": "string" }, "reason": { "type": "string" }, "expires_at": { "type": "string" } } } },
+    "last_green_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["proof_ref", "content_hash", "summary"],
+      "properties": {
+        "proof_ref": { "type": "string", "description": "Reference to the last green test proof (root-relative). NOT an embedded copy (A6)." },
+        "content_hash": { "type": "string", "description": "sha256 the resuming master re-verifies; mismatch => REJECT packet (A6/A7)." },
+        "summary": { "type": "string", "description": "Short human-readable summary of last green state." }
+      }
+    },
+    "next_decision": { "type": "string", "description": "The single next decision/action the fresh master must take on resume. Mirrors checkpoint.next_step discipline." },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["packet_self_hash", "built_at", "not_stale_assertion"],
+      "properties": {
+        "packet_self_hash": { "type": "string", "description": "sha256 of packet body (excl. this field). Fresh master recomputes." },
+        "built_at": { "type": "string", "description": "ISO-8601 caller-supplied build time." },
+        "not_stale_assertion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["all_refs_hashed", "no_open_ambiguity", "no_partial_subsession"],
+          "properties": {
+            "all_refs_hashed": { "type": "boolean", "description": "Every *_ref carries a resolvable content_hash. FALSE => REJECT." },
+            "no_open_ambiguity": { "type": "boolean", "description": "No unresolved high-impact ambiguity. FALSE => REJECT (resume would guess)." },
+            "no_partial_subsession": { "type": "boolean", "description": "No sub-session left in_progress without a rollback/accept decision. FALSE => REJECT." }
+          },
+          "description": "Fail-closed stale/partial/ambiguity gate (A6). Any false, any missing hash, or any hash mismatch on resume => the fresh master REJECTS the packet and asks the human; it MUST NOT resume on a partial packet."
+        }
+      }
+    },
+    "_provenance": { "$ref": "neo:common_provenance_envelope" }
+  }
+}

@@ -1,0 +1,212 @@
+{
+  "package_id": "ems.constraint_package.v1",
+  "package_version": "1.0.0-P4-draft",
+  "constraints": [
+    {
+      "id": "C-FAILCLOSED-GATE",
+      "statement": "FAIL-CLOSED (default case is the threat): the activation gate treats any activation state that is not a positively-verified, unexpired, unrevoked, valid code as BLOCKED. None / blank / unknown / expired / revoked / unresolvable => access DENIED. A verifier that THROWS, TIMES OUT, or whose activation store/dependency is UNREACHABLE or unresolvable is treated as NOT-verified => access DENIED (default-deny on verifier error/timeout/unreachable dependency); it is never a pass-through. Access is granted ONLY on an explicit valid-code proof; absence of a decision is a denial, never a pass-through.",
+      "kind": "security",
+      "severity": "blocking",
+      "traces_to_spec": [
+        "AC-GATE-1"
+      ]
+    },
+    {
+      "id": "C-FAILCLOSED-CORRECTION",
+      "statement": "FAIL-CLOSED corrections: a correction whose target period, prior value, or downstream impact cannot be resolved is REFUSED, never silently dropped or applied on a guess. A correction landing in a CLOSED accounting period posts to the CURRENT open period by default (never edits the closed period, never vanishes). If a correction targets a CLOSED period and NO open period currently exists, the correction is REFUSED (blocked) until an open period is created -- the system never implicitly reopens the closed period, never drops the correction, and never guesses a period (default-deny on any unresolvable period/target). Unknown correction state => refuse and require classification.",
+      "kind": "data",
+      "severity": "blocking",
+      "traces_to_spec": [
+        "AC-CORR-1",
+        "AC-CORR-2"
+      ]
+    },
+    {
+      "id": "C-FAILCLOSED-CONCURRENCY",
+      "statement": "FAIL-CLOSED concurrency: any write that depends on a stock count or money balance must carry the version/lock it read; if the expected version/lock is unknown, stale, or unresolvable the write is REFUSED (optimistic-concurrency reject or serialized retry), never applied blind. No lost update, no oversell, no double-charge, no over-refund/over-return may result from a race.",
+      "kind": "data",
+      "severity": "blocking",
+      "traces_to_spec": [
+        "AC-STOCK-1",
+        "AC-PAY-1",
+        "AC-RET-1"
+      ]
+    },
+    {
+      "id": "C-COST-DATALAYER",
+      "statement": "Cost price and profit are hidden from staff at the DATA layer (row-level security / role-scoped views / column-level authorization), not merely omitted from the UI. No staff-scoped read path (API, query, report, printed document, storage object) may return a cost or profit value. This explicitly includes RENDERED and PRINTED documents and any generated/stored document artifact or storage object: no render, print, upload, or storage path may embed or return cost/profit for a staff principal (reaffirmed against the financial render/print surface R-DOCUMENT-RENDER-PRINT).",
+      "kind": "security",
+      "severity": "blocking",
+      "traces_to_spec": [
+        "AC-ROLE-1",
+        "AC-ROLE-2"
+      ]
+    },
+    {
+      "id": "C-MONEY-CENTS",
+      "statement": "All monetary values are stored and computed as exact integer cents (or equivalent fixed-point); no binary floating point in money math. Shown == stored == printed to the cent, with deterministic Canadian rounding.",
+      "kind": "data",
+      "severity": "blocking",
+      "traces_to_spec": [
+        "AC-MONEY-1"
+      ]
+    },
+    {
+      "id": "C-TAX-CONFIG",
+      "statement": "Canadian sales tax is configuration, never hardcoded: province, rate(s), single-HST vs GST+PST composition, inclusive-vs-exclusive presentation, and tax-exempt handling are all data-driven. Ontario 13% HST is the v1 configured default.",
+      "kind": "regulatory",
+      "severity": "high",
+      "traces_to_spec": [
+        "AC-MONEY-1"
+      ]
+    },
+    {
+      "id": "C-SECRET-CREDENTIAL",
+      "statement": "Activation codes and all keys are credential-grade: stored only as salted hashes (never plaintext at rest beyond the issuing moment), never logged, never returned to any client, never committed to source. Verification is server-side only.",
+      "kind": "security",
+      "severity": "blocking",
+      "traces_to_spec": [
+        "AC-GATE-2"
+      ]
+    },
+    {
+      "id": "C-DOC-IMMUTABLE",
+      "statement": "An issued document (quotation once sent, invoice, receipt, delivery note) is immutable. Changes are expressed by a NEW superseding document that references the original; issued-document history is never edited in place.",
+      "kind": "functional",
+      "severity": "blocking",
+      "traces_to_spec": [
+        "AC-CORR-2"
+      ]
+    },
+    {
+      "id": "C-NUM-GAPLESS",
+      "statement": "Document numbering is gapless and unique per document type; the allocator yields a dense sequence with no gaps and no duplicates even under concurrent issuance and transaction rollback. Number allocation AND every externalization of a number (render, print, upload, client-visibility) occur STRICTLY AFTER the durable issue-transaction commits: no number is rendered, printed, uploaded, or shown before that commit, so a rollback exposes no number and consumes none. An externalized number is NEVER reused: if a number was externalized (rendered/printed/uploaded/client-visible) and its issue transaction did not durably commit, that number is PERMANENTLY CONSUMED and recorded as a durable, audited void/cancel/supersede entry; if that compensating record cannot be written, issuance BLOCKS (fail-closed). Reuse of an externalized number is prohibited. The allocator is serialized per document type (accepting the throughput cost; see DA-NUMBERING-CONCURRENCY).",
+      "kind": "functional",
+      "severity": "high",
+      "traces_to_spec": [
+        "AC-NUM-1"
+      ]
+    },
+    {
+      "id": "C-VOID-NODELETE",
+      "statement": "Business/financial records are never hard-deleted; a mistaken order is VOIDED and retained. Hard delete is permitted ONLY where provably safe (no financial/stock effect ever applied) and is itself audited.",
+      "kind": "data",
+      "severity": "blocking",
+      "traces_to_spec": [
+        "AC-VOID-1",
+        "AC-CORR-1"
+      ]
+    },
+    {
+      "id": "C-CORRECTION-CONTROLLED",
+      "statement": "Every correction action (void, edit/revise, reverse, re-allocate, adjust, safe-delete) is permission-gated, requires a reason, is confirmed before applying, is fully audited with before/after, preserves the original value, and recomputes all downstream numbers (invoice totals, stock, customer balance, reports) atomically and consistently. Correction posting is idempotent under retry: a partially-committed correction that is retried posts the adjusting/reversing entry EXACTLY ONCE (idempotency-key / dedup guarded); if exactly-once cannot be guaranteed the action is REFUSED (default-deny), never applied at risk of a double-post. No ad-hoc or direct-DB mutation path exists.",
+      "kind": "data",
+      "severity": "blocking",
+      "traces_to_spec": [
+        "AC-CORR-1"
+      ]
+    },
+    {
+      "id": "C-AUDIT-APPENDONLY",
+      "statement": "The audit trail is append-only and captures who/what/when for every create, price change, payment, return, void, and correction, plus why + before/after for corrections. Audit records cannot be edited or deleted by any business role.",
+      "kind": "security",
+      "severity": "high",
+      "traces_to_spec": [
+        "AC-AUDIT-1"
+      ]
+    },
+    {
+      "id": "C-CREDIT-BLOCK",
+      "statement": "An order that would exceed a customer's credit limit is BLOCKED (hard stop). Override is permitted only for a configured role and is audited with a reason.",
+      "kind": "functional",
+      "severity": "high",
+      "traces_to_spec": [
+        "AC-CREDIT-1"
+      ]
+    },
+    {
+      "id": "C-RESERVATION",
+      "statement": "Open quotations reserve stock; reserved stock is unavailable for other confirmations and is released on quote expiry, cancel, or conversion to order, without leaking or double-counting availability.",
+      "kind": "functional",
+      "severity": "medium",
+      "traces_to_spec": [
+        "AC-STOCK-1"
+      ]
+    },
+    {
+      "id": "C-STOCK-MOVE-ONCE",
+      "statement": "Physical on-hand stock has a SINGLE movement owner and an explicit RESERVE->COMMIT->FULFILL lifecycle: a quotation RESERVES (availability = on_hand - reserved; on_hand unchanged), order-confirm COMMITS (decrements on_hand EXACTLY ONCE), and the delivery note FULFILLS (records goods leaving; NEVER re-decrements). No path decrements on_hand more than once for the same goods; a void/return reverses the single committed movement exactly once (idempotent). If the committed/reserved state for a movement is unknown or unresolvable the movement is REFUSED (default-deny), never applied twice or blind.",
+      "kind": "data",
+      "severity": "blocking",
+      "traces_to_spec": [
+        "AC-STOCK-1",
+        "AC-VOID-1"
+      ]
+    },
+    {
+      "id": "C-RETURN-REFUND-CAP",
+      "statement": "Returns and refunds are capped on two INDEPENDENT axes: cumulative GOODS returned <= goods SOLD, and cumulative CASH refunded <= cash actually RECEIVED for the order. Returned value exceeding cash received resolves as a credit-note / debt-reduction, never as cash out; cash refund is never issued beyond cash in. If the sold or cash-received basis is unknown or unresolvable the refund is REFUSED (default-deny). Splitting the excess into a credit-note (rather than hard-refusing the whole return) is the default resolution (see DA-RETURN-REFUND-SPLIT).",
+      "kind": "data",
+      "severity": "blocking",
+      "traces_to_spec": [
+        "AC-RET-1"
+      ]
+    },
+    {
+      "id": "C-HOST-INDEPENDENT",
+      "statement": "All planning and evidence artifacts are host-independent: root-relative './...' paths only, zero absolute paths / drive letters / literal host-store names inside any artifact body.",
+      "kind": "operational",
+      "severity": "high",
+      "traces_to_spec": [
+        "AC-AUDIT-1"
+      ]
+    }
+  ],
+  "test_harness_ref": {
+    "artifact_id": "ems.test_harness.v1",
+    "content_hash": "PENDING:harness-is-a-later-impl-artifact-not-authored-in-this-planning-go"
+  },
+  "profile_risk_ref": {
+    "artifact_id": "ems.risk_register.v1",
+    "content_hash": "5a3f2fae32cd7a44946ce1f40ddbbf95049ade91cb3712f50aaa1ebb396cb3f6"
+  },
+  "capability_tier": "high",
+  "_provenance": {
+    "artifact_id": "ems.constraint_package.v1",
+    "artifact_class": "constraint",
+    "schema_id": "neo:constraint_package",
+    "schema_version": "4.0-P3-A",
+    "producer_identity": {
+      "role": "neo-planning-subsession",
+      "model_class": "strong_producer",
+      "model_name": "claude-opus-4-8"
+    },
+    "validator_identity": {
+      "role": "engine-test-neoschema",
+      "model_class": "validator",
+      "model_name": null,
+      "not_applicable_reason": null
+    },
+    "created_at": "2026-07-04T16:05:00Z",
+    "updated_at": "2026-07-04T18:30:00Z",
+    "content_hash": {
+      "algo": "sha256",
+      "value": "2ec03b3e9fdfdb218c181b6f0882c84eb15b4b3456ee355cfacb0934e73bc985"
+    },
+    "scope_boundary": {
+      "declared_paths": [
+        "./NEO_SESSION/40-p4-ems-planning-2026-07-04/"
+      ],
+      "declared_surfaces": [
+        "filesystem"
+      ]
+    },
+    "source_input_packets": [
+      {
+        "packet_id": "ems.project_spec.v1",
+        "content_hash": "37a40b613340c117e450a5d177c7b4797b0dd8bcfae49654b27eed78afacbbe5"
+      }
+    ],
+    "gate_ref": "hg:40-p4-ems-planning-2026-07-04:START"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:master_checkpoint",
+  "title": "NEO 4.0 MASTER_CHECKPOINT",
+  "_home": "./program/MASTER_CHECKPOINT.json (JSON authoritative per Q1)",
+  "_status": "INSTALLED 4.0-P3-A (from the KEPT 4.0 Session-0 draft). Live spine schema. RECONCILES WITH the live neo:checkpoint spine schema — this is a program-scope SUPERSET for the master orchestrator, NOT a fork. It EMBEDS the live checkpoint shape (by $ref) under `session_checkpoint` and adds only program-orchestration fields.",
+  "_reconcile": "The live neo:checkpoint (.neo/schema/checkpoint.schema.json) stays the per-session resumability record, written by the governor. MASTER_CHECKPOINT is the orchestrator's program-level state. It does not redefine checkpoint fields; it references them via $ref. If a future build slice prefers to keep them wholly separate files, that is acceptable — the requirement is: reuse, do not contradict.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["master_id", "master_version", "session_checkpoint", "spec_ref", "constraint_package_ref", "risk_register_ref", "subsession_index_ref", "open_deferrals", "orchestration_mode", "_provenance"],
+  "properties": {
+    "master_id": { "type": "string", "minLength": 1 },
+    "master_version": { "type": "string" },
+    "session_checkpoint": {
+      "$ref": "neo:checkpoint",
+      "description": "The live neo:checkpoint record (session_id, current_task, progress, next_step, model_map, spend_so_far, changed_files_baseline, updated_at). Reused by $ref, not redefined. See .neo/schema/checkpoint.schema.json for the authoritative field spec."
+    },
+    "spec_ref": { "type": "object", "additionalProperties": false, "required": ["artifact_id", "content_hash"], "properties": { "artifact_id": { "type": "string" }, "content_hash": { "type": "string" } } },
+    "constraint_package_ref": { "type": "object", "additionalProperties": false, "required": ["artifact_id", "content_hash"], "properties": { "artifact_id": { "type": "string" }, "content_hash": { "type": "string" } } },
+    "risk_register_ref": { "type": "object", "additionalProperties": false, "required": ["artifact_id", "content_hash"], "properties": { "artifact_id": { "type": "string" }, "content_hash": { "type": "string" } } },
+    "subsession_index_ref": { "type": "object", "additionalProperties": false, "required": ["artifact_id", "content_hash"], "properties": { "artifact_id": { "type": "string" }, "content_hash": { "type": "string" } } },
+    "open_deferrals": {
+      "type": "array",
+      "description": "Typed deferrals WITH EXPIRY (D9). An expired deferral is a stop/rollover trigger.",
+      "items": { "type": "object", "additionalProperties": false, "required": ["id", "type", "reason", "expires_at"], "properties": { "id": { "type": "string" }, "type": { "type": "string" }, "reason": { "type": "string" }, "expires_at": { "type": "string" } } }
+    },
+    "orchestration_mode": { "type": "string", "enum": ["serial"], "description": "REQUIRED (P0.1/F1): every checkpoint MUST assert this; a checkpoint with no mode is now invalid, so 'disabled by construction' cannot be sidestepped by omission. ONLY 'serial' is valid in this design. 'concurrent' is DESIGNED-BUT-DISABLED (A5): not a permitted enum value until S6->SHIP + the one-time human enable gate. Fail-closed by construction." },
+    "_provenance": { "$ref": "neo:common_provenance_envelope" }
+  }
+}

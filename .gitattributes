@@ -1,0 +1,4 @@
+# Byte-exact integrity: NEO ships a SHA-256 RELEASE_MANIFEST and verify_neo.ps1 re-hashes every
+# file. Any end-of-line normalization on checkout would change bytes and FAIL verification.
+# Disable all EOL conversion so a clone checks out byte-identical to what was committed/manifested.
+* -text

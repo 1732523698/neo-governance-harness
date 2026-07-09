@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(. '<NEO_ROOT>\\.neo\\scripts\\notify\\notify_raphael.ps1'*)"
+    ],
+    "deny": []
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"<NEO_ROOT>\\_install\\session_orient_entry.ps1\""
+          }
+        ]
+      }
+    ]
+  }
+}

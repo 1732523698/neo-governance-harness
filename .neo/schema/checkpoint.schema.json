@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:checkpoint",
+  "title": "NEO Governor Checkpoint",
+  "description": "Resumability-first state, written continuously by NEO_GOVERNOR. A hard stop at any moment must resume cleanly from this. Includes a changed-files baseline so resume can detect a stale checkpoint before continuing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["session_id", "current_task", "progress", "next_step", "model_map", "spend_so_far", "changed_files_baseline", "updated_at"],
+  "properties": {
+    "session_id": { "type": "string", "minLength": 1 },
+    "current_task": { "type": "string" },
+    "progress": { "type": "string", "description": "Plain status of where the current task stands." },
+    "next_step": { "type": "string", "description": "The single next action to take on resume." },
+    "model_map": {
+      "type": "object",
+      "description": "task_id -> model actually used (mirrors model_routing_log).",
+      "additionalProperties": { "type": "string" }
+    },
+    "spend_so_far": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unit", "amount", "is_estimate"],
+      "properties": {
+        "unit": { "type": "string", "enum": ["api_usd", "output_tokens"] },
+        "amount": { "type": "number", "minimum": 0 },
+        "is_estimate": {
+          "type": "boolean",
+          "description": "TRUE on the subscription path (own-counter estimate). On the API path this reflects provider-reported spend where available."
+        }
+      }
+    },
+    "changed_files_baseline": {
+      "type": "array",
+      "description": "STALE-CHECKPOINT GUARD: {path, sha256} of files this session changed at checkpoint time. On resume, re-hash and compare before continuing.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": { "type": "string" },
+          "sha256": { "type": "string" }
+        }
+      }
+    },
+    "updated_at": { "type": "string", "description": "ISO-8601 timestamp (caller-supplied; agents do not self-generate time)." }
+  }
+}

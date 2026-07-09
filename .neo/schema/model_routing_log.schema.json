@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:model_routing_log",
+  "title": "NEO 4.0 MODEL_ROUTING_LOG record",
+  "_status": "INSTALLED 4.0-P3-A (from the KEPT 4.0 Session-0 draft, D6). Live spine schema. The evolvable layer that binds capability CLASSES (bound in schemas) to exact model NAMES (bound here, Q2). One entry per task. Reconciles with session_contract.model_routing_policy {mechanical, moderate_judgment, hard_logic_or_audit} and mirrors checkpoint.model_map (task_id -> model).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["log_id", "log_version", "entries", "_provenance"],
+  "properties": {
+    "log_id": { "type": "string", "minLength": 1 },
+    "log_version": { "type": "string" },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["task_id", "task_risk", "producer_model", "producer_class", "validator_model", "validator_class", "validator_adequacy_rationale"],
+        "properties": {
+          "task_id": { "type": "string" },
+          "task_risk": { "type": "string", "enum": ["high", "medium", "low"] },
+          "producer_model": { "type": "string", "description": "Exact model name used to PRODUCE." },
+          "producer_class": { "type": "string", "enum": ["cheap_producer", "strong_producer"] },
+          "validator_model": { "type": "string", "description": "Exact model name used to VALIDATE." },
+          "validator_class": { "type": "string", "enum": ["validator", "auditor"] },
+          "validator_adequacy_rationale": { "type": "string", "description": "WHY the validator is adequate for this task's risk. Required field: an empty rationale => BLOCK (A7)." }
+        },
+        "_rule": "ENFORCED (D6): validator capability >= producer capability. A cheap_producer entry whose task_risk != low, OR whose target artifact_class is judging (constraint|test_harness|profile_risk), is BLOCKED unless routed through the separately-gated constraint-edit session."
+      }
+    },
+    "_provenance": { "$ref": "neo:common_provenance_envelope" }
+  }
+}

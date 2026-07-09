@@ -1,0 +1,60 @@
+{
+  "manifest_id": "neo:evidence_layout_manifest",
+  "version": "a-bridge-1",
+  "governing_contract": "./.neo/NEO_EVIDENCE_LAYOUT_CONTRACT.md",
+  "roadmap_master_sha": "4432E2B9C97FBDC432F43D6EC86F3E06BB20BB6433CF9CC2BA0D560C063A2A27",
+  "note": "Canonical, NEO-root-RELATIVE in-tree homes for NEO evidence artifacts. Homes/locations only; field-level schemas are deferred to 4.0 Session-0. All paths resolve against the PORT-S1 self-locating NEO root ('./' = the resolved root). ZERO absolute paths by contract. Open/extensible list: consumers must tolerate added categories and added section-5.5 artifacts.",
+  "root_authority": "port-s1-self-locating-resolver",
+  "path_convention": "root-relative; './' denotes the PORT-S1-resolved NEO root; no drive letters; no host-store absolutes",
+  "categories": {
+    "program_docs": {
+      "home": "./program/",
+      "disposition": "reserved",
+      "scope": "program",
+      "note": "Roadmap master, program spec, and program-level section-5.5 evidence. Reserved name; no file moved by A-BRIDGE."
+    },
+    "subsession_records": {
+      "home": "./NEO_SESSION/<slug>/",
+      "disposition": "formalized",
+      "members": ["snapshots/", "changed_files/", "diffs/", "proof/", "coder_report.json", "audit/"]
+    },
+    "audit_bundles": {
+      "home": "./NEO_SESSION/<slug>/audit/",
+      "disposition": "new-home-name",
+      "note": "Isolated-auditor evidence; sibling to proof/ (builder proof)."
+    },
+    "release_authenticity": {
+      "in_tree_anchor": "./.neo/release/ROOT_OF_TRUST_ANCHOR.json",
+      "in_tree_release_manifest": "./.neo/release/RELEASE_MANIFEST.json",
+      "external_published_root_sha": "out-of-band-release-channel",
+      "disposition": "reserved",
+      "note": "In-tree anchor/manifest prove only 'unchanged since packaging'. Authenticity rides the out-of-band published root SHA; verify FAILS CLOSED for others-install when it is absent (v4 fix #1 / T1). PORT-S2 RE-CUTS fresh into ./.neo/release/; it does not copy the stale provisional-dev anchor. Custody: provisional-dev is tamper-evident, not tamper-proof."
+    },
+    "live_governance_state": {
+      "gates": "./.neo/gates/",
+      "gates_members": ["HUMAN_GATE_LEDGER.json", "OWNERSHIP_LEASE.json"],
+      "schema_spine": "./.neo/schema/",
+      "disposition": "referenced-not-moved"
+    }
+  },
+  "section_5_5_homes": {
+    "PROJECT_SPEC": "./program/PROJECT_SPEC.*",
+    "CONSTRAINT_PACKAGE": "./program/CONSTRAINT_PACKAGE.*",
+    "ARCHITECTURE": "./program/ARCHITECTURE.*",
+    "RISK_REGISTER": "./program/RISK_REGISTER.*",
+    "SUBSESSION_INDEX": "./program/SUBSESSION_INDEX.*",
+    "per_subsession_folders": "./NEO_SESSION/<slug>/",
+    "MASTER_CHECKPOINT": "./program/MASTER_CHECKPOINT.*",
+    "HANDOFF_PACKET": "./program/HANDOFF_PACKET.*"
+  },
+  "deferred_to_session_0": [
+    "full field-level JSON schemas for section-5.5 files",
+    "provenance/timestamp field specs",
+    "SUBSESSION_INDEX record format",
+    "MASTER_CHECKPOINT and HANDOFF_PACKET contents",
+    "audit-bundle internal schema",
+    "RELEASE_MANIFEST field schema",
+    "stale-packet/hash check (section 5.8)",
+    "file extensions for section-6 artifacts"
+  ]
+}

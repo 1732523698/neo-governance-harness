@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:risk_register",
+  "title": "NEO 4.0 RISK_REGISTER",
+  "_home": "./program/RISK_REGISTER.json (JSON authoritative per Q1)",
+  "_status": "INSTALLED 4.0-P3-A (from the KEPT 4.0 Session-0 draft). Live spine schema. Drives D4 audit tier + D5 gate policy. profile_risk-adjacent; its risk classifications MUST be explicit — no silent MEDIUM->low (Q3/A7).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["register_id", "register_version", "risks", "_provenance"],
+  "properties": {
+    "register_id": { "type": "string", "minLength": 1 },
+    "register_version": { "type": "string" },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "area", "risk_class", "never_batchable", "audit_tier"],
+        "properties": {
+          "id": { "type": "string" },
+          "area": { "type": "string", "enum": ["security", "payment", "data_migration", "deploy", "root_of_trust", "constraints", "harness_tests", "audit_rubrics", "risk_profile", "artifact_classification", "release_authenticity", "prod_export_promotion", "general_feature"], "description": "Q6 ratified never-batchable set are enumerated here; 'general_feature' is the only batchable-eligible area." },
+          "risk_class": { "type": "string", "enum": ["high", "medium", "low"] },
+          "never_batchable": { "type": "boolean", "description": "TRUE for every area except general_feature (D5). Exact-inspection, explicit START/END." },
+          "audit_tier": { "type": "string", "enum": ["lightweight", "isolated", "full_isolated"], "description": "D4 mapping. MEDIUM defaults to 'isolated' unless an explicit downgrade record is present (below)." },
+          "explicit_downgrade": {
+            "type": ["object", "null"],
+            "additionalProperties": false,
+            "required": ["reason", "authority", "timestamp", "scope"],
+            "properties": { "reason": { "type": "string" }, "authority": { "type": "string" }, "timestamp": { "type": "string" }, "scope": { "type": "string" } },
+            "description": "Q3/A7: the ONLY way MEDIUM audit_tier may be 'lightweight'. Null = no downgrade. A 'lightweight' tier on a medium risk WITHOUT this record => BLOCKED (no silent fall-through, T2)."
+          }
+        }
+      }
+    },
+    "_provenance": { "$ref": "neo:common_provenance_envelope" }
+  }
+}

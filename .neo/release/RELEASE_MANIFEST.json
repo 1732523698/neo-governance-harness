@@ -1,0 +1,688 @@
+{
+    "manifest_id":  "neo:release_manifest",
+    "note":  "PUBLIC cut in-tree RELEASE_MANIFEST. Proves ONLY unchanged-since-packaging. Authenticity rides the OUT-OF-BAND published root SHA. root_sha256 = SHA-256 over the sorted \"\u003csha\u003e  \u003cpath\u003e\" lines of files[] (this manifest excluded; the .git working tree excluded).",
+    "produced_by":  "neo49-public-cut recut_public.ps1",
+    "produced_at_utc":  "2026-07-10T01:59:44Z",
+    "derived_from":  "NEO 4.9 root_sha256 68318693361955e1eecbd0b60b0cb136f6663e129af28c39878c4ada009db990",
+    "hash_algorithm":  "SHA256",
+    "file_count":  169,
+    "root_sha256":  "fdc3f0277a963e2430e5e54a466a6397c9bef7638bd67dedba7556dd309a1262",
+    "files":  [
+                  {
+                      "path":  ".agents/skills/NEO_AUDITOR/SKILL.md",
+                      "sha256":  "d07ccce87a0405b535af3e36e1cf9c497a2d833a4b7a64780b8b761ff3ba0a05"
+                  },
+                  {
+                      "path":  ".agents/skills/NEO_BUILDER/SKILL.md",
+                      "sha256":  "c2f1c6d3d845580817508706786ab80aed6d63e4b2fd9c4fbaf69a76af569121"
+                  },
+                  {
+                      "path":  ".agents/skills/NEO_DIRECTOR/SKILL.md",
+                      "sha256":  "90bb4f3774e3790a3510f39afd04555e18d1beebc80c2e4d2efb939a754e8715"
+                  },
+                  {
+                      "path":  ".agents/skills/NEO_SYSTEM/SKILL.md",
+                      "sha256":  "31f1fde115eea87ceb147488a3a8fb1ff09aed921f067318e5a0c896e15efe83"
+                  },
+                  {
+                      "path":  ".claude/settings.json",
+                      "sha256":  "c381785f1ae676ecb8f7ba45d90c46d2b93a729e5767671c24e3d6dc9ae44582"
+                  },
+                  {
+                      "path":  ".claude/skills/NEO_AUDITOR/SKILL.md",
+                      "sha256":  "f3c69822205b48371b4cb36ea125ae44ab6fad9f7acc23c57d09acd77ca11d26"
+                  },
+                  {
+                      "path":  ".claude/skills/NEO_BUILDER/SKILL.md",
+                      "sha256":  "c2f1c6d3d845580817508706786ab80aed6d63e4b2fd9c4fbaf69a76af569121"
+                  },
+                  {
+                      "path":  ".claude/skills/NEO_DIRECTOR/SKILL.md",
+                      "sha256":  "90bb4f3774e3790a3510f39afd04555e18d1beebc80c2e4d2efb939a754e8715"
+                  },
+                  {
+                      "path":  ".claude/skills/NEO_QA_SCENARIO/SKILL.md",
+                      "sha256":  "50800408b0ff1b477a0e220166ba32aa528f565df80fbc1120d5636935163bf0"
+                  },
+                  {
+                      "path":  ".claude/skills/NEO_SYSTEM/SKILL.md",
+                      "sha256":  "31f1fde115eea87ceb147488a3a8fb1ff09aed921f067318e5a0c896e15efe83"
+                  },
+                  {
+                      "path":  ".gitattributes",
+                      "sha256":  "c5d513e239aa43281497ecb95fff8f5d86505040716791042233e3fe71b45df4"
+                  },
+                  {
+                      "path":  ".gitignore",
+                      "sha256":  "14836dfb3791da60a14e5522f0d4d1c09f71c3a51b5b715c702a9eafedb299aa"
+                  },
+                  {
+                      "path":  ".neo/_legacy_quarantine/NEO_AMBASSADOR/SKILL.md",
+                      "sha256":  "89e3fdd5fbc9429bd19381aceac218c0c08ec8e13820905971db5e93382b5ce3"
+                  },
+                  {
+                      "path":  ".neo/_legacy_quarantine/NEO_CODER/SKILL.md",
+                      "sha256":  "782a0893ae73647359ef71b1981ae19dd7cdcc410a38521bed73a7ad7cc568a3"
+                  },
+                  {
+                      "path":  ".neo/_legacy_quarantine/NEO_CONTRACT_CHECK/SKILL.md",
+                      "sha256":  "a29b6287b77c2e804051dd7130d4849e395666b4772225ec5acd091bb3fd6373"
+                  },
+                  {
+                      "path":  ".neo/_legacy_quarantine/NEO_ENV_MANAGER/SKILL.md",
+                      "sha256":  "a538262661169d2137cbaedccc72666923a8a99a956fc805cb4e67f5cbdf7836"
+                  },
+                  {
+                      "path":  ".neo/_legacy_quarantine/NEO_GOVERNOR/SKILL.md",
+                      "sha256":  "5563274fcaa88014a06f06e77474d7a678296e7cf987a202e420e719e82c445f"
+                  },
+                  {
+                      "path":  ".neo/_legacy_quarantine/NEO_MIGRATION_MANAGER/SKILL.md",
+                      "sha256":  "cf768cffdc7e25a789d7dd3f542205764f34b9c1aebb50efb64776cb5edfb52f"
+                  },
+                  {
+                      "path":  ".neo/_legacy_quarantine/NEO_ORCHESTRATOR/SKILL.md",
+                      "sha256":  "5cc6ec9575932dc8b97f6f674a680e2f3a487b7f42153611b578d0eba244dbfa"
+                  },
+                  {
+                      "path":  ".neo/_legacy_quarantine/NEO_PM/SKILL.md",
+                      "sha256":  "056c30ad55ec512a56011f97975f39fae988018df59fe99697649262736968f1"
+                  },
+                  {
+                      "path":  ".neo/_legacy_quarantine/NEO_PRODUCT_SPEC/SKILL.md",
+                      "sha256":  "4860db560f605ac78c936fb6bf45445a429efa193510dabd6fe5d9077760b0de"
+                  },
+                  {
+                      "path":  ".neo/_legacy_quarantine/NEO_QA_SCENARIO/SKILL.md",
+                      "sha256":  "945f54463da8034d572ab82309ae117c39b9e441ad32227440aff9ac67d8e7ec"
+                  },
+                  {
+                      "path":  ".neo/_legacy_quarantine/NEO_RELEASE_MANAGER/SKILL.md",
+                      "sha256":  "f6745c0effe3cd63c976fc8387abf855c9bd49f0637e3d42fc2468410e85b141"
+                  },
+                  {
+                      "path":  ".neo/_legacy_quarantine/NEO_VERIFIER/SKILL.md",
+                      "sha256":  "a0361dfb03bc6ae6832649098a3926c3be75c443637ca545a39a4c7a7fee5f47"
+                  },
+                  {
+                      "path":  ".neo/_v3.0/session1/FREEZE_INVENTORY.json",
+                      "sha256":  "1b77f4969060112ad67809ce6be2e1658d034f9a2944d931e207c7286c97a2d1"
+                  },
+                  {
+                      "path":  ".neo/_v3.0/session2/CORPUS_MANIFEST.json",
+                      "sha256":  "ba13cf84fa9c38da7b95288156af60c156a0637e54c4620562c858b76cc4bb0a"
+                  },
+                  {
+                      "path":  ".neo/_v3.0/session2/GOLDEN_CORPUS/negatives/app_adapter_fixture_suite.cases.json",
+                      "sha256":  "ae0ee5626f341e71f5e349c4935981b9ea005c41c54b0aa1c8bbd8b6512ab197"
+                  },
+                  {
+                      "path":  ".neo/AUTO_MODE_ATTESTATION.md",
+                      "sha256":  "f512c0c9d37a79368a7075c3d322bba71a2fb4219fef21d1774b5a677f3737f2"
+                  },
+                  {
+                      "path":  ".neo/DEFINITIONS.md",
+                      "sha256":  "5667debed1e3e9683b0100cefa699498d63b1f151cf09652f213cada0bb8e9bf"
+                  },
+                  {
+                      "path":  ".neo/evidence_layout_manifest.json",
+                      "sha256":  "ef92658976fe851af1d601d957c781fb3e0476dde9137e58446c1ef52851ab78"
+                  },
+                  {
+                      "path":  ".neo/examples/DUMMY_APP.md",
+                      "sha256":  "77ee131181670c525f84ae671e2622498c9d60c579526d6eef0ca1ba619d68fe"
+                  },
+                  {
+                      "path":  ".neo/gates/HUMAN_GATE_LEDGER.json",
+                      "sha256":  "a363ca511dd82c0d07256d9e789ce437dd7e46992baf35f9b49cf9523086adfb"
+                  },
+                  {
+                      "path":  ".neo/gates/OWNERSHIP_LEASE.json",
+                      "sha256":  "f60e39fef4e98b5b70e7f75ebc551d4cb9eaa7d40beb706ac7d39d69862a3d07"
+                  },
+                  {
+                      "path":  ".neo/NEO_APP.md",
+                      "sha256":  "de3eb19d5adcf17b8038264106f7c7b096154f5eb31cee05f204648a84054195"
+                  },
+                  {
+                      "path":  ".neo/NEO_DOCTRINE.md",
+                      "sha256":  "fab28edb4cb9c6c59cb7299bc10e9c146b3bfcd41d6a66a225a2233bdbee161f"
+                  },
+                  {
+                      "path":  ".neo/NEO_EVIDENCE_LAYOUT_CONTRACT.md",
+                      "sha256":  "74be214894a5ff50d3627f350f73ff861448fd3325ea0d72ed79464a391e4226"
+                  },
+                  {
+                      "path":  ".neo/NEO_RELEASE_DISCIPLINE.md",
+                      "sha256":  "03f9bdc1acc85fa26fa68061b08d55678da49b35d59c468be9302de3451aa0e1"
+                  },
+                  {
+                      "path":  ".neo/NEO_RISK_TIERS.md",
+                      "sha256":  "82f67362f3c17a3dea59eea0b709538fb27ae8d6f0e4bc786d4a17b3d184cbf7"
+                  },
+                  {
+                      "path":  ".neo/release/ROOT_OF_TRUST_ANCHOR.json",
+                      "sha256":  "77216a26ce62c42e31e6ea235a3967e81b8c630d3771d8f04df6e2e2894e98b2"
+                  },
+                  {
+                      "path":  ".neo/release/ROOT_OF_TRUST_ANCHOR.json.sha256",
+                      "sha256":  "39dfcf783f6c35b7ead669cac15e527fb8cba1ff21c1611bb1f2b5d9374a8459"
+                  },
+                  {
+                      "path":  ".neo/schema/app_end_evidence.schema.json",
+                      "sha256":  "9bb87d44b8ffd5577c6ecceec9810c90cf48ec4cc9cc1031ffc14ef7d6f581d2"
+                  },
+                  {
+                      "path":  ".neo/schema/architecture.schema.json",
+                      "sha256":  "11fbc2349be8af5c3a8944e420b6272b8cd4ba23927816e15de8f9f30f4366f0"
+                  },
+                  {
+                      "path":  ".neo/schema/artifact_classes.json",
+                      "sha256":  "2fb1615e5ca36625f6ce9596ce4144ceb84c13be7c84bd7de201708196be060b"
+                  },
+                  {
+                      "path":  ".neo/schema/artifact_provenance.json",
+                      "sha256":  "7f017f1c276d51eb6b899898296bee30d2bdf061eb03bc052af4a1507db759cb"
+                  },
+                  {
+                      "path":  ".neo/schema/attempt_ledger_entry.schema.json",
+                      "sha256":  "9f7d37b263cba3550fe1ca65c151a1d2c6119324521842dfaf43bd3d5a006881"
+                  },
+                  {
+                      "path":  ".neo/schema/audit_result.schema.json",
+                      "sha256":  "953eb9cd6a99ca8b74d170245d9f9323089686abf971ceece0e10b2b2f3a1afa"
+                  },
+                  {
+                      "path":  ".neo/schema/checkpoint.schema.json",
+                      "sha256":  "6c836d0cca7ad6b98d6f05814d19b0b237edff65b2d86d2048639cb0c45f89a3"
+                  },
+                  {
+                      "path":  ".neo/schema/clarity_freeze_record.schema.json",
+                      "sha256":  "34a3286357df2789d55565ea5896cfc43de6f29fa12780f41e0ca6727b2508ce"
+                  },
+                  {
+                      "path":  ".neo/schema/clarity_gate_record.schema.json",
+                      "sha256":  "ef5dfa067f22c9ada7c9db6b6a700b76d3db6c84643766eee765b5d6de7aced1"
+                  },
+                  {
+                      "path":  ".neo/schema/common_provenance_envelope.schema.json",
+                      "sha256":  "f42ca4b04f1b0b5352867d6f019c4096f76e21b6450f87592c411ed314fe1816"
+                  },
+                  {
+                      "path":  ".neo/schema/constraint_package.schema.json",
+                      "sha256":  "84a141c06591e6cd9aadbc4ef2db9b47fa84ee117a9498fbd91d4197e8403183"
+                  },
+                  {
+                      "path":  ".neo/schema/engine_auto_keep.schema.json",
+                      "sha256":  "d20e8809b96f98f2649e704b2b7b7ea98de5be394ccb53789742215502203d9e"
+                  },
+                  {
+                      "path":  ".neo/schema/external_audit_verdict.schema.json",
+                      "sha256":  "890f19ee1d1d67b505c7aa9b92fa3613d7891598c6820e1a38d0a6973dc1ac1c"
+                  },
+                  {
+                      "path":  ".neo/schema/external_slice_call_entry.schema.json",
+                      "sha256":  "604bbad63ceea4396b1293dff3813a62cc0fdfefc97141aabbcd32092ca8a2ce"
+                  },
+                  {
+                      "path":  ".neo/schema/governance_manifest.schema.json",
+                      "sha256":  "a1bff739dee4545fed6cbcb9a05339f5a766a12ddc5151d8a5f65857c71183f1"
+                  },
+                  {
+                      "path":  ".neo/schema/handoff_packet.schema.json",
+                      "sha256":  "1517bfc91c04f1060765bd4e500a86c9b86c72024d02fc73f874ebf695154af7"
+                  },
+                  {
+                      "path":  ".neo/schema/human_gate_ledger.schema.json",
+                      "sha256":  "8ecf4c7ae74d6fb8d419dc3360c3deed9d403292612ca27f416bfb6dc46021c1"
+                  },
+                  {
+                      "path":  ".neo/schema/input_packet.schema.json",
+                      "sha256":  "b901cf5831419a76c2d1c9deaadaf3ab62781b695f5fe13cc65e407b09676b5d"
+                  },
+                  {
+                      "path":  ".neo/schema/iteration_manifest_entry.schema.json",
+                      "sha256":  "e68ffceea0736c15867144260d4a23bde13006c31b6d7d76febbf442cdaa799b"
+                  },
+                  {
+                      "path":  ".neo/schema/master_checkpoint.schema.json",
+                      "sha256":  "8807316a4ea97f50afd150b6ffc6db920a7df93c7ce1e3abf8faf1957768088a"
+                  },
+                  {
+                      "path":  ".neo/schema/model_routing_log.schema.json",
+                      "sha256":  "8a083a2ed338d7e6c652eae60e0ee54fa1b2fce886d0405a7bd46ed3cf0c9e0e"
+                  },
+                  {
+                      "path":  ".neo/schema/module_contract.schema.json",
+                      "sha256":  "928a98973b31b1271b44499009778a0f13c1243ee3410c2106a85081270e7c5b"
+                  },
+                  {
+                      "path":  ".neo/schema/NEO_APP_PROFILE.schema.json",
+                      "sha256":  "43026f99cb22e04bfaa35a03be47ffddf16124d3b3a734b31b18be8dea74f1d9"
+                  },
+                  {
+                      "path":  ".neo/schema/ownership_lease.schema.json",
+                      "sha256":  "b44192cb4ff6ec845f8c774359ffc3cc94750a4fc240116f272a1b5434ec2a74"
+                  },
+                  {
+                      "path":  ".neo/schema/project_spec.schema.json",
+                      "sha256":  "6d054795d3037b4a0681f079f520ab4adb15f3e7985796b3264e4a75882ed45f"
+                  },
+                  {
+                      "path":  ".neo/schema/residue_report.schema.json",
+                      "sha256":  "423f4f375e9f75d5b9c74d87aeee85be2c294f6b0f187abc38ac52aad14930de"
+                  },
+                  {
+                      "path":  ".neo/schema/risk_register.schema.json",
+                      "sha256":  "671574eef7ec837e679f922bda7718c11842169f19f9c456c643ec5544e0f4b7"
+                  },
+                  {
+                      "path":  ".neo/schema/root_of_trust_anchor.schema.json",
+                      "sha256":  "96ed03a5cdae586fa16ded95f6a7d12c170b5a03626cb6285fb1a8be5430270e"
+                  },
+                  {
+                      "path":  ".neo/schema/run_autonomy_mode.schema.json",
+                      "sha256":  "72cb52e617e62635aca0667908b1cefff693eb21741cfbda2c2a4dc13693d99d"
+                  },
+                  {
+                      "path":  ".neo/schema/run_manifest.schema.json",
+                      "sha256":  "2f713451d5ea04a96695365305bc1bc985c4f4de4b29d9003f14215f51528a93"
+                  },
+                  {
+                      "path":  ".neo/schema/session_contract.schema.json",
+                      "sha256":  "07957079aefc1a8d8b38c1d5d68fbcaa13b59c714dec7dfd6d6e2e8cec324acf"
+                  },
+                  {
+                      "path":  ".neo/schema/spawn_ledger_entry.schema.json",
+                      "sha256":  "9a1bea5cf1ebb06b09c01e0cbf16a1ba91ca5a236af4e14c53fb668ea0ccc7eb"
+                  },
+                  {
+                      "path":  ".neo/schema/subsession_end_report.schema.json",
+                      "sha256":  "b048ad994704e35780216db8dc7e5a6e12f84baf255b372b62c786525a9d587e"
+                  },
+                  {
+                      "path":  ".neo/schema/subsession_index.schema.json",
+                      "sha256":  "48334c611803b176d226844b8452e66ee131216bc8cecfc29b5bb28fd15bc92b"
+                  },
+                  {
+                      "path":  ".neo/schema/subsession_start_packet.schema.json",
+                      "sha256":  "625b383e6dc35f553d99ead88019ca8e2dcc8f04194a869ca2584d5573fce58d"
+                  },
+                  {
+                      "path":  ".neo/schema/unlock_record.schema.json",
+                      "sha256":  "6d9c05ce072849f99e3ec730f65104303150b15853ddbe67e4dc1901d27311e5"
+                  },
+                  {
+                      "path":  ".neo/scripts/_neo_root.ps1",
+                      "sha256":  "f297c714764cc30b498b8163207e04410d38b74ef13e462114ea251e7ab52036"
+                  },
+                  {
+                      "path":  ".neo/scripts/ambassador_check.ps1",
+                      "sha256":  "180d20d7dd3fae8a7a08236026a2102e09e1c7794eae15a2b2f7482f6cdb752f"
+                  },
+                  {
+                      "path":  ".neo/scripts/app_adapter_fixture_suite.ps1",
+                      "sha256":  "dcc1eec8b06dcf864bb7f009631ca41e4c709e7a6064808fbaf2be2d429902a1"
+                  },
+                  {
+                      "path":  ".neo/scripts/assemble_auditor_input.ps1",
+                      "sha256":  "203c7ba20cea3b31e034e046f49ee733f227f5094eb14b1df7b1f06a8dc80ad2"
+                  },
+                  {
+                      "path":  ".neo/scripts/authorization_fixture_suite.ps1",
+                      "sha256":  "a8e19bdfe6d7ef971de8f7f5a86147fab224f67b145e22c7d85c3dde345975b8"
+                  },
+                  {
+                      "path":  ".neo/scripts/build_export.ps1",
+                      "sha256":  "86a88e32725a70e83fe19f39b773d970af8a47b52882f57484fa748910ab41bc"
+                  },
+                  {
+                      "path":  ".neo/scripts/c1_golden_matrix.ps1",
+                      "sha256":  "ad4928b397e98f51377bf09f1f531f77b85c234871518bb0b24443ed891c1cd6"
+                  },
+                  {
+                      "path":  ".neo/scripts/check_app_end_evidence.ps1",
+                      "sha256":  "a778d58b139d450a200808ca366e56aa5691d527f103fd9bbdb6fc419b79eb87"
+                  },
+                  {
+                      "path":  ".neo/scripts/contract_check.ps1",
+                      "sha256":  "ba8483b61ff3bb4a497a16077969abb7f61b2142ac69ac24c42eeb35060d7d74"
+                  },
+                  {
+                      "path":  ".neo/scripts/custody_fixture_suite.ps1",
+                      "sha256":  "38f1ec29f9a69a382714f3c5009bac6ca31d28db61377f7d876250b955575cc0"
+                  },
+                  {
+                      "path":  ".neo/scripts/governor.ps1",
+                      "sha256":  "9d2ce34d70181ade0c8e2c1f27050225f16e95c7bb94b005e7af795d62b30beb"
+                  },
+                  {
+                      "path":  ".neo/scripts/hooks/session_orient.ps1",
+                      "sha256":  "7505a896707c9441ff75fbf863139ae037e5cc69bad141e97cd671f7d8f6ac6b"
+                  },
+                  {
+                      "path":  ".neo/scripts/hooks/session_orient_fixture_suite.ps1",
+                      "sha256":  "6519f18fe60726f4003b5ca1a8e1bad76ca28800978a5ce3ea7ad55c16721ed4"
+                  },
+                  {
+                      "path":  ".neo/scripts/lint_skills.ps1",
+                      "sha256":  "f76b28910a95cf83298c4c3bb0005be7c126c584a49baeb21e054f3c075239af"
+                  },
+                  {
+                      "path":  ".neo/scripts/new_session.ps1",
+                      "sha256":  "e2d5c3f3e5ed1d1a556783356d3207c2419d0252e03e4b4d5cb75a01d87b9bf4"
+                  },
+                  {
+                      "path":  ".neo/scripts/notify/notify_fixture_suite.ps1",
+                      "sha256":  "6e4cd52cb749ba493a3be494cce448bdc2fb1d2f328f63f540dc488191042c4e"
+                  },
+                  {
+                      "path":  ".neo/scripts/notify/notify_hook.ps1",
+                      "sha256":  "2b22c8413d51f7a3f55fe407b4f7e7491bf0ac75c2f174aa85dd69753cba8e4f"
+                  },
+                  {
+                      "path":  ".neo/scripts/notify/notify_hook_fixture_suite.ps1",
+                      "sha256":  "c4874223cf062a6d187b93ce020a8861ffd310a0e0e7d1bafc31639e88303457"
+                  },
+                  {
+                      "path":  ".neo/scripts/notify/notify_raphael.ps1",
+                      "sha256":  "afa3982a505f3f3a0c0ea65b165b115edcddbf99fb2c4cbe55feb184e4be7eb4"
+                  },
+                  {
+                      "path":  ".neo/scripts/notify/set_session_name.ps1",
+                      "sha256":  "645d5d5bf10a98a6b15706684853dfc30f0564191c7434d23bbfbe3780cfc16c"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/harness/orch_clarity_suite.ps1",
+                      "sha256":  "85b065b76ad89ca6f88531c714712e24677fb6aac7637abf20b197a2348ab796"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/harness/orch_diff_suite.ps1",
+                      "sha256":  "8d4dc97a4ef3da926a4f35895b3ad54e43f63a305f8af415d31f83cc80a09dbf"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/harness/orch_enforce_suite.ps1",
+                      "sha256":  "cb20f48108a7b25c7e85db3d88e9bc97818fc08dd4ef79487e8f883bc0fde3ee"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/harness/orch_external_suite.ps1",
+                      "sha256":  "8746610226bb45016903a7f61cbbaf77ba40c66b4a8cfb27cdeef939bfc60f0c"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/harness/orch_fixture_suite.ps1",
+                      "sha256":  "822a8792a7f292fec0d686ccef7453f9bc52b0cfe83b3b66f37142c004fa0109"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/harness/orch_govmanifest_suite.ps1",
+                      "sha256":  "4cfd317399df86cb68c28bdb0afead0091ce6728d84d608158344b2245a6adee"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/harness/orch_loop_suite.ps1",
+                      "sha256":  "95d36d5c213960a8cfa87b482284c2c31dcfa40c26abff7aa55f12c75feb45b2"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/harness/orch_rollover_suite.ps1",
+                      "sha256":  "b7638cbbbf8a02d6427c794307be6919dd7ae56cf3e28e4632966a8783f48c59"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/harness/orch_router_suite.ps1",
+                      "sha256":  "5830e56b7cffc77b9253f80cdeb0beeeb20a26876865962862f4222972aeb7d9"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/harness/orch_run_suite.ps1",
+                      "sha256":  "14342d1ca2ef861ce708e463381656ef00e4559e84a39b056dc9182fe1917508"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/harness/orch_supervisor_suite.ps1",
+                      "sha256":  "20d4613c7e4cc631f11606779f83727561172f1686b05feb5394c50ec62070cb"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/orch_auditor_stub.ps1",
+                      "sha256":  "96be7105e4429a28d1054f65a518b5d0845864f1823c305a837aaeb1649f51af"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/orch_clarity.ps1",
+                      "sha256":  "3413082b09aa28fd4e3ea9c45c8de789d0fe8ac493d82dbf2e7e3949882d015d"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/orch_class.ps1",
+                      "sha256":  "ee01116b4552936507f9ca8fa60dac7d38804b91e1e5fbd0eaac3e4f8d15b9e9"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/orch_diff.ps1",
+                      "sha256":  "61f3a2a45bc9e6bc36e09bb6583af4eaeb0121b7407634a7cf4f37d71d015c16"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/orch_enforce.ps1",
+                      "sha256":  "9908cb2844f1278426090f33509eee90d2f8c4111a28be5079c09947ab018ca8"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/orch_engine.ps1",
+                      "sha256":  "b7f5e6352d5e119c3adf0d9059b88de44c5fabb90fd89cd348a31e9c6fbc592e"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/orch_external.ps1",
+                      "sha256":  "5975d0998bee5cf9f47f5b6ea3b924c30c2bec6d3976408d1bf27b00bab5ebab"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/orch_govmanifest.ps1",
+                      "sha256":  "22b4749cc034348dd0e831f210337f6b6e6d904d3124905c82af60f09d44fb01"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/orch_io.ps1",
+                      "sha256":  "e617cde33dfa2a3a23dfc7cd41ec6e1b42bf1f311b677adc0d9bf7db2b3c34be"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/orch_loop.ps1",
+                      "sha256":  "94310757ab3d5007a6967158de2b577026dd65607ed23eaeedb0bb7e2d4db3b8"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/orch_rollover.ps1",
+                      "sha256":  "13a47d0891fcc4cac5f2d875f71a5c7a98f5035314810033b206d81fb2f05a5b"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/orch_router.ps1",
+                      "sha256":  "f4d58cd50e8f036b55b55379096f196cea3cab43d73790902ab7ed419e70cd5b"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/orch_run.ps1",
+                      "sha256":  "cf733d2e898d4573eb1c604698934c5eecec421c11d33f3ea94723b393a83d71"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/orch_schema.ps1",
+                      "sha256":  "358a4bcc0168f055a162a3e89bb7699669a52b0d7ea18a592a03dd03225410f4"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/orch_supervisor.ps1",
+                      "sha256":  "77a84b4c9e1b35b457b5de92e6514eed7c3f363c13691a458863c3ed552e08b0"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/orchestrator.ps1",
+                      "sha256":  "7b98c270002b48a181aae3e7c724b0e13cc74051986e09718d313ecd615185f4"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/pilot/orch_pilot.ps1",
+                      "sha256":  "0c4d2e0eb794a12b597be694b88feeb5db71a7b9817562d2bdeb5ef81be76dad"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/pilot/orch_pilot_run.ps1",
+                      "sha256":  "82d37ea9a4d6aa315a136d2f5e6662f7c3cebee50dc9155b18b5468d56f188e5"
+                  },
+                  {
+                      "path":  ".neo/scripts/orchestrator/README.md",
+                      "sha256":  "22d2a641bf33e1559b3e9c1c83087fa74b200fb8095bb64ad4f8f257047ef15d"
+                  },
+                  {
+                      "path":  ".neo/scripts/ownership_lease.ps1",
+                      "sha256":  "3758f7b7b6d23da7b2b953974f3d5709becce8ec4f4980f23e310c356222e7ae"
+                  },
+                  {
+                      "path":  ".neo/scripts/ownership_lease_fixture_suite.ps1",
+                      "sha256":  "ade7ce9e0ba0652cb268ce407566cb0553a749e6a0126ee354516d85c6f5af62"
+                  },
+                  {
+                      "path":  ".neo/scripts/pm_consistency.ps1",
+                      "sha256":  "732e69aea961de5d2a8f25fbd79df6492f8f42eb17cbcbc195e3c71027a568d6"
+                  },
+                  {
+                      "path":  ".neo/scripts/regression_smoke.ps1",
+                      "sha256":  "47e9c957062c8f54b2d6ff05ae31c014450f0c1806d2431c844dfdc2bfd582cf"
+                  },
+                  {
+                      "path":  ".neo/scripts/role_governance_fixture_suite.ps1",
+                      "sha256":  "d3fedc6ee9ff75e5d9e73ae6b63d5a8418489ca82b25209b42aa346b080c8f28"
+                  },
+                  {
+                      "path":  ".neo/scripts/root_of_trust_fixture_suite.ps1",
+                      "sha256":  "cd204d3b209a726b5a89118bcc8a392a202a772399f8bb1267a738aa4a7bc3d2"
+                  },
+                  {
+                      "path":  ".neo/scripts/scenario_sim.ps1",
+                      "sha256":  "0079284e59437abbe5d7f1228160d1aa36d6fe00143541d3c33fde7ff882ba4c"
+                  },
+                  {
+                      "path":  ".neo/scripts/slice_bundle_tool.ps1",
+                      "sha256":  "c7f22e9bdf7494dc3fbb3af825beec1bdb8f3e0de988e008725a79f37774b550"
+                  },
+                  {
+                      "path":  ".neo/scripts/verifier.ps1",
+                      "sha256":  "b97e44e35c520e718751c06db40edb84353c15f5609e83608a657ddd10deff42"
+                  },
+                  {
+                      "path":  ".neo/scripts/verify_app_slice.ps1",
+                      "sha256":  "e6a9a6eed034b846a263f37045f7012263a9d1c68c86d128aadef8d5ba89ad00"
+                  },
+                  {
+                      "path":  ".neo/scripts/verify_root_of_trust.ps1",
+                      "sha256":  "e9ed34ce9d9d4944d99f9d07e0ea78af3de9ab339445229c2dc91b104a282a49"
+                  },
+                  {
+                      "path":  ".neo/scripts/verify_session.ps1",
+                      "sha256":  "29abe03446b0bce3a44d13e5e657499fe35933b44d509e3c7d43aa90d14bac80"
+                  },
+                  {
+                      "path":  ".neo/scripts/watchdog/subsession_watchdog.ps1",
+                      "sha256":  "56bc271440874734b63634dccab30ebde6087330b68e471236b871ca217530f7"
+                  },
+                  {
+                      "path":  ".neo/scripts/watchdog/subsession_watchdog_fixture_suite.ps1",
+                      "sha256":  "2b79ac244068f801dcf624cee3b6f56baaccd53892e462651dbdb0f055974eba"
+                  },
+                  {
+                      "path":  ".neo/scripts/watchdog/watchdog_config.json",
+                      "sha256":  "09d511a089ddd26e0e4f600a7bafd768e80c4db2af17595cc29925f20383376b"
+                  },
+                  {
+                      "path":  ".neo/templates/closeout_packet.template.md",
+                      "sha256":  "3f2f16281863a0c3ced82f4eb030a30a64357c038fbfdd60716a15c37243c424"
+                  },
+                  {
+                      "path":  ".neo/templates/session_contract.template.json",
+                      "sha256":  "1a0449a32d29429dba400e4cf3515c99c696373289fbad8527434ea2fa8f7913"
+                  },
+                  {
+                      "path":  ".neo/templates/start_packet.template.md",
+                      "sha256":  "1f798ed5032976b796a88fc2a22249ed6ba64a16a72c86ff3ed13fe58184bcb3"
+                  },
+                  {
+                      "path":  ".neo/templates/start_reconciliation.template.md",
+                      "sha256":  "1e8cc2443e4200901839838749433766c02b214d2ae2a4eb12a27b44c23b6ba5"
+                  },
+                  {
+                      "path":  "_install/session_orient_entry.ps1",
+                      "sha256":  "352f7f0615e3be40ddcbbca8b438405f45d46994a072136211f83dce98ecccb1"
+                  },
+                  {
+                      "path":  "_install/setup_neo49.ps1",
+                      "sha256":  "e3e720d50b7d7600618deb6df9983e84721963a776a11c9a169e585d4f30e7d7"
+                  },
+                  {
+                      "path":  "_install/user_skills/NEO_AUTO_OFF/SKILL.md",
+                      "sha256":  "256f930f52418eab88d2dce4ba0bc8af678c55b1082ea6c7efc68f57f72aa199"
+                  },
+                  {
+                      "path":  "_install/user_skills/NEO_AUTO_ON/SKILL.md",
+                      "sha256":  "c8055a6c94b183a0e6032f3e3c1327637fc5fc2d9bc809630cbb58cdb5e307ac"
+                  },
+                  {
+                      "path":  "CAPABILITIES.md",
+                      "sha256":  "7e806326addc889e938e0094646bd299f6f084ca0b4786db7c86e730016a3696"
+                  },
+                  {
+                      "path":  "CLAUDE.md",
+                      "sha256":  "584644dd7adbc28cf1a1f150041c497c89518fe9073b4aa161ad7dfb15629b80"
+                  },
+                  {
+                      "path":  "INSTALL.md",
+                      "sha256":  "341948ca5a37a3ae5fec5b85cca7d47425871ba26b3c6b4654bf846d6a717dca"
+                  },
+                  {
+                      "path":  "KNOWN_LIMITATIONS.md",
+                      "sha256":  "0c4eddb29cb939e02356df4c9a2f81cd9abdc82681e87e18b04558a41c74ff85"
+                  },
+                  {
+                      "path":  "LICENSE",
+                      "sha256":  "6abbc5af1b72d8127b389109a2adff128eef85deeefdeaefa63f55a81f112ad7"
+                  },
+                  {
+                      "path":  "modules/unified-analytics-rental-platform/NEO_APP_PROFILE.json",
+                      "sha256":  "cf406ed2541912172acd413eae18af324fe6afbbe28620f4905157fc6251cc3c"
+                  },
+                  {
+                      "path":  "modules/unified-analytics-rental-platform/NEO_APP_PROFILE.md",
+                      "sha256":  "86c3e96bbb94d5f6694264573e1cedbf714a90ebaae481da54fd2671c5fff979"
+                  },
+                  {
+                      "path":  "NEO_SESSION/_neo_roadmap/DEF-P8_EMAIL_NOTIFY_ATTESTATION.md",
+                      "sha256":  "0c8cd8058591906d808fb4033f02ce9f73d7006c2dda1d4863f621e36ce7df1a"
+                  },
+                  {
+                      "path":  "NEO_V1_BASELINE.md",
+                      "sha256":  "123251fc8ea3d96edf97aedf6d293e392e035767cd4430bcb0d9e702a4c190da"
+                  },
+                  {
+                      "path":  "program/ARCHITECTURE.json",
+                      "sha256":  "6e0c09e1c6d5712a23632952dc8adad7d291e81c01d21ceb44d336a10ac76b31"
+                  },
+                  {
+                      "path":  "program/CONSTRAINT_PACKAGE.json",
+                      "sha256":  "5ebe147661adc5005a5902f346c231774216966474b586a610c76d49d88dcf56"
+                  },
+                  {
+                      "path":  "program/HANDOFF_PACKET.json.PLACEHOLDER",
+                      "sha256":  "1fbb6309e0f79b2c158e58c02de15f71189f1f32dc973c4de4b7701f63241175"
+                  },
+                  {
+                      "path":  "program/MASTER_CHECKPOINT.json.PLACEHOLDER",
+                      "sha256":  "1fbb6309e0f79b2c158e58c02de15f71189f1f32dc973c4de4b7701f63241175"
+                  },
+                  {
+                      "path":  "program/PROJECT_SPEC.json",
+                      "sha256":  "f3165180a574f389ba60a45af65d0a5ca6462a9fabecc288aa478f955153fb5f"
+                  },
+                  {
+                      "path":  "program/README.md",
+                      "sha256":  "8f36788c3fdf7fb810a2c40288e8608496673ca85424a4807d8635c060a41f1c"
+                  },
+                  {
+                      "path":  "program/RISK_REGISTER.json",
+                      "sha256":  "10da595caf9ccad68969a71956791585aa8dbe71ff1d8e12cfd24bc6e39d6fc4"
+                  },
+                  {
+                      "path":  "program/SUBSESSION_INDEX.json.PLACEHOLDER",
+                      "sha256":  "1fbb6309e0f79b2c158e58c02de15f71189f1f32dc973c4de4b7701f63241175"
+                  },
+                  {
+                      "path":  "PROVENANCE.md",
+                      "sha256":  "1e52532f4498b4c552e2074a797d1c9fcade36d4ee93660894e2b8e14b8a2e88"
+                  },
+                  {
+                      "path":  "README.md",
+                      "sha256":  "93b9c781b3f62980a589cfd1da4d781e7b7e047473cd9311b69f8ac602fdeca6"
+                  },
+                  {
+                      "path":  "verify_neo.ps1",
+                      "sha256":  "49be88a363b34030fbcbd17d4b21baa45aa87b206bc7b0463a32587ea11fdc83"
+                  }
+              ]
+}

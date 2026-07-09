@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:subsession_index",
+  "title": "NEO 4.0 SUBSESSION_INDEX record format",
+  "_home": "./program/SUBSESSION_INDEX.json (JSON authoritative per Q1)",
+  "_status": "INSTALLED 4.0-P3-A (from the KEPT 4.0 Session-0 draft). Live spine schema. A-BRIDGE section 7 deferred 'SUBSESSION_INDEX record format' — now installed. The master's append-only ledger of every dispatched sub-session; carried by reference+hash in the HANDOFF_PACKET (A6/D7).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["index_id", "index_version", "records", "_provenance"],
+  "properties": {
+    "index_id": { "type": "string", "minLength": 1 },
+    "index_version": { "type": "string" },
+    "records": {
+      "type": "array",
+      "description": "Append-only. One record per dispatched sub-session.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["slug", "start_packet_ref", "risk_class", "status", "end_report_ref", "audit_tier_applied", "last_green", "depends_on"],
+        "properties": {
+          "slug": { "type": "string", "description": "Per-subsession slug; the ./NEO_SESSION/<slug>/ folder id (A-BRIDGE 3.2)." },
+          "start_packet_ref": { "type": "object", "additionalProperties": false, "required": ["packet_id", "content_hash"], "properties": { "packet_id": { "type": "string" }, "content_hash": { "type": "string" } } },
+          "risk_class": { "type": "string", "enum": ["high", "medium", "low"] },
+          "status": { "type": "string", "enum": ["dispatched", "in_progress", "ended_pass", "ended_fail", "rolled_back", "human_accepted_fail"] },
+          "end_report_ref": { "type": ["object", "null"], "additionalProperties": false, "required": ["artifact_id", "content_hash"], "properties": { "artifact_id": { "type": "string" }, "content_hash": { "type": "string" } } },
+          "audit_tier_applied": { "type": "string", "enum": ["lightweight", "isolated", "full_isolated", "pending"] },
+          "last_green": {
+            "type": ["object", "null"],
+            "additionalProperties": false,
+            "required": ["proof_ref", "content_hash", "summary"],
+            "properties": { "proof_ref": { "type": "string", "description": "Reference to the last green ./NEO_SESSION/<slug>/proof/ artifact." }, "content_hash": { "type": "string" }, "summary": { "type": "string", "description": "Short human summary (A6: reference + hash + short summary, never bulky embed)." } }
+          },
+          "depends_on": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "P0.1/F3 (Codex): slugs this sub-session depends on. Lets the master identify dependents FROM THE INDEX ALONE, so the D8 'failed HIGH-risk blocks dependent continuation' rule is mechanically representable. Empty array = no dependencies."
+          },
+          "dependent_continuation_blocked_until": {
+            "type": ["string", "null"],
+            "description": "P0.1/F3 (Codex): non-null marker set when this record's failure blocks dependents; carries the condition that clears it (e.g. 'resolution:rolled_back|human_accepted_fail of <slug>'). Cleared to null ONLY when status transitions to 'rolled_back' or 'human_accepted_fail'. While non-null, any record whose depends_on contains this slug MUST NOT continue (D8 §2)."
+          },
+          "resolution": {
+            "type": ["object", "null"],
+            "additionalProperties": false,
+            "required": ["mode", "rollback_ref", "gate_ref", "dependency_impact"],
+            "properties": {
+              "mode": { "type": "string", "enum": ["rolled_back", "human_accepted_fail"] },
+              "rollback_ref": { "type": ["string", "null"], "description": "Reference into ./NEO_SESSION/<slug>/snapshots/ (the restore point). Required non-null when mode='rolled_back'." },
+              "gate_ref": { "type": ["string", "null"], "description": "HUMAN_GATE_LEDGER decision-log id. Required non-null when mode='human_accepted_fail' (D8 §2). Same gate_ref convention as the provenance envelope." },
+              "dependency_impact": { "type": "string", "description": "Structured note on what dependent work this resolution unblocks or invalidates." }
+            },
+            "description": "P0.1/F2 (Codex): machine-carried rollback/acceptance decision for a terminal (esp. failed HIGH-risk) sub-session. Null only for non-terminal statuses."
+          }
+        },
+        "allOf": [
+          {
+            "_comment": "P0.1/F2 FAIL-CLOSED: a human-accepted failure MUST carry a human gate_ref.",
+            "if": { "properties": { "status": { "const": "human_accepted_fail" } } },
+            "then": { "required": ["resolution"], "properties": { "resolution": { "required": ["mode", "gate_ref"], "properties": { "mode": { "const": "human_accepted_fail" }, "gate_ref": { "type": "string", "minLength": 1 } } } } }
+          },
+          {
+            "_comment": "P0.1/F2 FAIL-CLOSED: a rolled_back record MUST carry the snapshot restore point.",
+            "if": { "properties": { "status": { "const": "rolled_back" } } },
+            "then": { "required": ["resolution"], "properties": { "resolution": { "required": ["mode", "rollback_ref"], "properties": { "mode": { "const": "rolled_back" }, "rollback_ref": { "type": "string", "minLength": 1 } } } } }
+          }
+        ]
+      }
+    },
+    "_provenance": { "$ref": "neo:common_provenance_envelope" }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:module_contract",
+  "title": "NEO Module Contract (graduation candidates only)",
+  "description": "Declared I/O contract a module must satisfy to graduate to the larger platform without a rewrite. Only required when session_contract.graduation_target != null.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["module_name", "declared_inputs", "declared_outputs", "exported_symbols", "connection_points", "allowed_side_effects", "forbidden_side_effects", "graduation_target"],
+  "properties": {
+    "module_name": { "type": "string", "minLength": 1 },
+    "declared_inputs": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "declared_outputs": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "exported_symbols": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "connection_points": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "allowed_side_effects": { "type": "array", "items": { "type": "string" } },
+    "forbidden_side_effects": { "type": "array", "items": { "type": "string" } },
+    "test_commands": { "type": "array", "items": { "type": "string" } },
+    "graduation_target": { "type": "string", "minLength": 1 }
+  }
+}

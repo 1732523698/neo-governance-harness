@@ -1,0 +1,313 @@
+{
+  "architecture_id": "ems.architecture.v1",
+  "architecture_version": "1.0.0-P4-draft",
+  "components": [
+    {
+      "id": "gate",
+      "responsibility": "Subscription ACTIVATION GATE (fail-closed access control, NOT DRM). Verifies the business account's activation state on every session/request boundary. DEFAULT-DENY: none/blank/unknown/expired/revoked/unresolvable/verifier-throw/verifier-timeout/store-unreachable => BLOCKED (a verifier that throws, times out, or cannot reach the activation store fails CLOSED, never passes through); access granted ONLY on a positively-verified valid code. Supports permanent (revocable) and time-limited (expiring) codes. No phone-home. STACK NOTE (design decision DA-STACK): implemented as server-side middleware in Next.js (App Router) route handlers/server actions backed by a Supabase Postgres activation table; the gate check is server-side only and cannot be bypassed by the client.",
+      "owns_paths": [
+        "./app/(gate)/",
+        "./lib/gate/",
+        "./db/activation/"
+      ],
+      "depends_on": [
+        "admin-activation",
+        "authz-rls"
+      ]
+    },
+    {
+      "id": "authz-rls",
+      "responsibility": "(a) COST/PROFIT HIDDEN AT THE DATA LAYER. Role-scoped authorization enforced in Postgres via Row-Level Security policies + column-privileged role-scoped views: the staff DB role has NO SELECT privilege on cost_price/profit columns, so cost/profit is absent from every staff-scoped read path (API, query, report, printed doc, storage object) rather than merely hidden in UI. Boss role sees cost/profit + all reports. Staff reach the DB only through the app's authenticated API bound to the staff Postgres role; they have NO direct DB, admin, or activation surface. Supabase RLS + separate Postgres roles (boss_role, staff_role, service_role never exposed to browser) are the enforcement mechanism that keeps staff off the DB/admin surface.",
+      "owns_paths": [
+        "./db/policies/",
+        "./db/roles/",
+        "./lib/authz/"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "catalog",
+      "responsibility": "Products + multi-spec inventory (variants) + multi-warehouse DATA model (one main warehouse in v1, no multi-warehouse UI). Product carries code, name, one primary image + additional images, spec/model, default sale price, cost price (boss-only column), low-stock threshold. Each VARIANT is separately-stocked with its own qty and optional price/cost. Stock is held as on_hand with a derived availability = on_hand - reserved; the RESERVE->COMMIT->FULFILL lifecycle (owned by sales for COMMIT and by documents for FULFILL) moves on_hand EXACTLY ONCE, at COMMIT (C-STOCK-MOVE-ONCE). Quantities support BOTH whole and decimal per a per-product/variant unit-of-measure.",
+      "owns_paths": [
+        "./app/products/",
+        "./lib/catalog/",
+        "./db/catalog/"
+      ],
+      "depends_on": [
+        "authz-rls"
+      ]
+    },
+    {
+      "id": "sales",
+      "responsibility": "(b) CONCURRENCY MODEL for orders. Sales orders (many lines, editable line price, discount-vs-default shown). Stock follows an explicit RESERVE (quote) -> COMMIT (order-confirm) -> FULFILL (delivery note) lifecycle; SALES owns the COMMIT, which is the SINGLE physical on_hand movement. Confirming an order COMMITS variant stock by decrementing on_hand EXACTLY ONCE, ATOMICALLY inside a single serializable DB transaction using optimistic concurrency (version/row-version guard) + a conditional decrement (UPDATE ... WHERE available >= qty) so a race cannot oversell or lose an update; a failed guard REFUSES the write and retries/serializes rather than applying blind. Quotations RESERVE stock (availability = on_hand - reserved; on_hand unchanged) and release on expiry/cancel/convert; the delivery note FULFILLS without re-decrementing (C-STOCK-MOVE-ONCE). Prevents oversell and double-movement (AC-STOCK-1).",
+      "owns_paths": [
+        "./app/orders/",
+        "./app/quotes/",
+        "./lib/sales/",
+        "./db/sales/"
+      ],
+      "depends_on": [
+        "catalog",
+        "money-tax",
+        "gate",
+        "authz-rls"
+      ]
+    },
+    {
+      "id": "payments-ar",
+      "responsibility": "(b) CONCURRENCY for money. Payments (cash + debit) allocated to specific orders; unpaid/partly-paid => customer credit/owed (A/R). Concurrent payments/allocations against one order are serialized against the order balance with a versioned guard so cumulative applied never exceeds owed (no double-charge/over-allocation, AC-PAY-1). Credit-limit BLOCK (hard stop) on over-limit orders, audited override only for a permitted role. Staff MAY take payments and MAY see customers' unpaid balances.",
+      "owns_paths": [
+        "./app/payments/",
+        "./lib/ar/",
+        "./db/payments/"
+      ],
+      "depends_on": [
+        "sales",
+        "money-tax",
+        "authz-rls",
+        "audit"
+      ]
+    },
+    {
+      "id": "returns-void",
+      "responsibility": "Returns put stock back and adjust the books; caps returns/refunds on two INDEPENDENT axes -- cumulative GOODS returned <= goods SOLD, and cumulative CASH refunded <= cash actually RECEIVED for the order (no over-return/over-refund, AC-RET-1, C-RETURN-REFUND-CAP). Returns on unpaid/partly-paid orders resolve as EITHER a credit note (reduces debt) OR a cash refund, user-selectable; cash refund is capped at cash received and any returned value above cash received resolves as a credit-note/debt-reduction (the split default; see DA-RETURN-REFUND-SPLIT), never cash out. If the sold or cash-received basis is unresolvable the refund is REFUSED (default-deny). Void keeps a mistaken order for record (never hard-deleted) and reverses stock/financial effects exactly once (idempotent, AC-VOID-1).",
+      "owns_paths": [
+        "./app/returns/",
+        "./lib/returns/",
+        "./db/returns/"
+      ],
+      "depends_on": [
+        "sales",
+        "payments-ar",
+        "corrections",
+        "audit"
+      ]
+    },
+    {
+      "id": "corrections",
+      "responsibility": "(c) CORRECTION MODEL. Single controlled correction engine for EVERY financial record (charges, payments, pending items, balances, invoices, credits, refunds, deposits, allocations). Actions: void, edit/revise, reverse, re-allocate, adjust, and safe-delete (only where provably no effect applied). Each action is permission-gated, reason-required, confirm-before-apply, fully audited with before/after, PRESERVES the original value (append reversing/adjusting entries; never overwrite history), and atomically recomputes all downstream numbers (invoice totals, stock, customer balance, reports) so they stay consistent. A correction into a CLOSED period posts to the CURRENT open period by default; if NO open period exists the correction is REFUSED (default-deny) until one is opened -- never implicitly reopening the closed period, never dropping, never guessing (C-FAILCLOSED-CORRECTION). Correction posting is idempotent under retry (idempotency-key / dedup): a partially-committed-then-retried correction posts its adjusting/reversing entry EXACTLY ONCE (AC-CORR-3); if exactly-once cannot be guaranteed the action is refused. Issued documents are corrected by a NEW SUPERSEDING document referencing the original, never by editing history (AC-CORR-1/2/3). No ad-hoc/direct-DB edit path exists.",
+      "owns_paths": [
+        "./app/corrections/",
+        "./lib/corrections/",
+        "./db/corrections/"
+      ],
+      "depends_on": [
+        "audit",
+        "documents",
+        "money-tax",
+        "authz-rls"
+      ]
+    },
+    {
+      "id": "money-tax",
+      "responsibility": "(d) MONEY + TAX REPRESENTATION. All money is exact INTEGER CENTS (fixed-point), no binary float; deterministic Canadian rounding; shown==stored==printed to the cent (AC-MONEY-1). Canadian sales tax is CONFIGURABLE not hardcoded: province, rate(s), single-HST vs GST+PST, tax-inclusive vs tax-exclusive presentation, and tax-exempt handling are all data-driven; Ontario 13% HST is the v1 configured default. Both inclusive and exclusive presentation modes are supported from the same stored cents.",
+      "owns_paths": [
+        "./lib/money/",
+        "./lib/tax/",
+        "./db/tax_config/"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "documents",
+      "responsibility": "Quotation, delivery note, invoice, receipt generation + rendering. GAPLESS per-type numbering via a SERIALIZED-per-type transactional sequence allocator that yields a dense, unique sequence even under concurrent issue and rollback (AC-NUM-1); number allocation AND all externalization (render/print/upload/client-visibility) occur STRICTLY AFTER the durable issue-transaction commits, so a rollback exposes and consumes no number; an externalized number is NEVER reused -- if externalized (rendered/printed/uploaded/client-visible) before a durable commit it is PERMANENTLY CONSUMED and recorded as a durable, audited void/cancel/supersede entry, and if that compensating record cannot be written issuance BLOCKS (fail-closed); reuse of an externalized number is prohibited -- C-NUM-GAPLESS; concurrency model is DA-NUMBERING-CONCURRENCY. Issued documents are IMMUTABLE; a change produces a NEW superseding document that references the original. The delivery note is the FULFILL/shipment marker (records goods have left) AND a printable doc; it does NOT re-decrement stock (on_hand was COMMITTED once at order-confirm). Rendered/printed documents and stored document objects carry NO cost/profit for a staff principal (C-COST-DATALAYER; R-DOCUMENT-RENDER-PRINT). Product images: one primary per product + additional images.",
+      "owns_paths": [
+        "./app/documents/",
+        "./lib/documents/",
+        "./db/numbering/"
+      ],
+      "depends_on": [
+        "money-tax",
+        "sales",
+        "authz-rls"
+      ]
+    },
+    {
+      "id": "audit",
+      "responsibility": "Append-only audit trail: who/what/when for every create, price change, payment, return, void, correction, plus why + before/after for corrections. No business role can edit or delete audit records (enforced by RLS: append-only, no UPDATE/DELETE grant). Feeds AC-AUDIT-1.",
+      "owns_paths": [
+        "./lib/audit/",
+        "./db/audit/"
+      ],
+      "depends_on": [
+        "authz-rls"
+      ]
+    },
+    {
+      "id": "admin-activation",
+      "responsibility": "(e) SECRET HANDLING FOR ACTIVATION CODES (credential-grade). Software-owner/admin-only surface to ISSUE and REVOKE activation codes (per business account, not per user). Codes are stored ONLY as salted hashes; the plaintext code exists only transiently at issuance and is never persisted, logged, returned to any client, or committed. Verification is server-side comparison against the hash. Revocation blocks access immediately. This admin surface is unreachable by any business (boss/staff) role.",
+      "owns_paths": [
+        "./app/(admin)/activation/",
+        "./lib/activation/",
+        "./db/activation_admin/"
+      ],
+      "depends_on": [
+        "authz-rls"
+      ]
+    },
+    {
+      "id": "neo-cold-auditor-wiring",
+      "responsibility": "(f) DESIGN ONLY (no engine edits this go): how a real isolated cold auditor replaces orch_auditor_stub in the NEO engine loop for the LATER EMS impl gos. Design: each EMS impl slice's END bundle (subsession_end_report + changed_files + diffs + proof + the bound test_harness results) is assembled by assemble_auditor_input into ./NEO_SESSION/<ems-slice-slug>/audit/ as an audit_bundle_feed input packet (neo:input_packet, packet_kind=audit_bundle_feed) with per-member content_hash. A SEPARATELY SPAWNED, context-isolated auditor (NEO_AUDITOR role) is fed ONLY that hashed bundle (no chat inheritance), re-hashes every member (mismatch => BLOCK), runs the promised tests non-cached, and returns a GO/NEEDS-MORE/NO-GO into subsession_end_report.auditor_recommendation_slot. The stub is replaced by binding this real auditor dispatch at the orchestrator's audit step; HIGH-risk slices (financials/gate/concurrency) get full_isolated tier and a null auditor slot BLOCKS the gate (D4). Wiring is a LATER-go engine change; this artifact only DESIGNS it and declares its evidence home.",
+      "owns_paths": [
+        "./NEO_SESSION/",
+        "./program/"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "impl-audit-harness",
+      "responsibility": "The bound EMS test_harness (authored in a LATER impl go) that turns each acceptance criterion into an executable fixture (activation_gate, rls_cost_hidden, role_matrix, concurrency_oversell/overpay, return_refund_cap, money_roundtrip, correction_lifecycle, superseding_document, void_idempotency, gapless_numbering, credit_limit_block, audit_trail, secret_exposure_scan). It is a JUDGING (test_harness-class) artifact, validated independently before its results count; its exit codes populate the END bundle the cold auditor consumes.",
+      "owns_paths": [
+        "./tests/harness/"
+      ],
+      "depends_on": [
+        "neo-cold-auditor-wiring"
+      ]
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "I-GATE-SALES",
+      "between": [
+        "gate",
+        "sales"
+      ],
+      "contract": "Every business operation requires a positively-verified valid activation token; gate denies by default (fail-closed). No valid token => no sales/catalog/payment/return/document operation. A verifier error/timeout or unreachable activation store is treated as no valid token (default-deny), never a pass-through."
+    },
+    {
+      "id": "I-AUTHZ-CATALOG",
+      "between": [
+        "authz-rls",
+        "catalog"
+      ],
+      "contract": "Staff Postgres role has no SELECT on cost_price/profit columns; catalog reads for staff return no cost/profit field at the data layer (RLS + role-scoped views)."
+    },
+    {
+      "id": "I-SALES-CATALOG",
+      "between": [
+        "sales",
+        "catalog"
+      ],
+      "contract": "Stock decrement/reservation is a versioned, conditional, atomic DB operation (UPDATE ... WHERE available >= qty with row-version guard); guard failure refuses and retries; never oversells. On_hand is decremented EXACTLY ONCE at order-confirm (COMMIT); quotation reservation and delivery-note fulfillment never re-decrement (single-movement owner, C-STOCK-MOVE-ONCE)."
+    },
+    {
+      "id": "I-PAY-SALES",
+      "between": [
+        "payments-ar",
+        "sales"
+      ],
+      "contract": "Payments allocate to order balance under a versioned guard; cumulative applied <= owed; credit-limit over-limit orders are blocked (audited override only)."
+    },
+    {
+      "id": "I-CORR-DOC",
+      "between": [
+        "corrections",
+        "documents"
+      ],
+      "contract": "A correction never mutates an issued document; it emits a NEW superseding document referencing the original, and posts closed-period corrections into the current open period; if no open period exists the correction is REFUSED (default-deny), never reopening the closed period. Adjusting entries post exactly once under retry (idempotent)."
+    },
+    {
+      "id": "I-MONEY-DOC",
+      "between": [
+        "money-tax",
+        "documents"
+      ],
+      "contract": "Documents render exact integer-cent totals with configured Ontario tax; shown==stored==printed across tax-inclusive and tax-exclusive modes."
+    },
+    {
+      "id": "I-AUDIT-CORR",
+      "between": [
+        "audit",
+        "corrections"
+      ],
+      "contract": "Every correction writes an append-only audit record with who/what/when/why/before/after before the transaction commits; audit is never editable."
+    },
+    {
+      "id": "I-ADMIN-GATE",
+      "between": [
+        "admin-activation",
+        "gate"
+      ],
+      "contract": "Only the admin surface issues/revokes codes (stored as salted hashes); the gate verifies server-side against the hash; revocation blocks immediately."
+    },
+    {
+      "id": "I-AUDITWIRE",
+      "between": [
+        "neo-cold-auditor-wiring",
+        "impl-audit-harness"
+      ],
+      "contract": "Each EMS impl slice END bundle (with harness exit codes) is assembled as a hashed audit_bundle_feed packet and consumed ONLY by a separately-spawned isolated cold auditor that re-hashes, re-runs tests non-cached, and returns GO/NEEDS-MORE/NO-GO; HIGH-risk slice with null auditor slot BLOCKS."
+    }
+  ],
+  "disjoint_scope_map": [
+    {
+      "group": "presentation-catalog",
+      "paths": [
+        "./app/products/",
+        "./app/documents/"
+      ],
+      "proven_disjoint": true
+    },
+    {
+      "group": "gate-admin",
+      "paths": [
+        "./app/(gate)/",
+        "./app/(admin)/activation/"
+      ],
+      "proven_disjoint": true
+    },
+    {
+      "group": "shared-financial-ledger",
+      "paths": [
+        "./db/sales/",
+        "./db/payments/",
+        "./db/returns/",
+        "./db/corrections/",
+        "./db/audit/"
+      ],
+      "proven_disjoint": false
+    }
+  ],
+  "_provenance": {
+    "artifact_id": "ems.architecture.v1",
+    "artifact_class": "evidence",
+    "schema_id": "neo:architecture",
+    "schema_version": "4.0-P3-A",
+    "producer_identity": {
+      "role": "neo-planning-subsession",
+      "model_class": "strong_producer",
+      "model_name": "claude-opus-4-8"
+    },
+    "validator_identity": {
+      "role": "engine-test-neoschema",
+      "model_class": "validator",
+      "model_name": null,
+      "not_applicable_reason": null
+    },
+    "created_at": "2026-07-04T16:10:00Z",
+    "updated_at": "2026-07-04T18:30:00Z",
+    "content_hash": {
+      "algo": "sha256",
+      "value": "8af47bc83012e74825be42d21ef7d988cea0b40231bde80ce72998f72c413b1c"
+    },
+    "scope_boundary": {
+      "declared_paths": [
+        "./NEO_SESSION/40-p4-ems-planning-2026-07-04/"
+      ],
+      "declared_surfaces": [
+        "filesystem"
+      ]
+    },
+    "source_input_packets": [
+      {
+        "packet_id": "ems.project_spec.v1",
+        "content_hash": "37a40b613340c117e450a5d177c7b4797b0dd8bcfae49654b27eed78afacbbe5"
+      },
+      {
+        "packet_id": "ems.constraint_package.v1",
+        "content_hash": "2ec03b3e9fdfdb218c181b6f0882c84eb15b4b3456ee355cfacb0934e73bc985"
+      }
+    ],
+    "gate_ref": "hg:40-p4-ems-planning-2026-07-04:START"
+  }
+}

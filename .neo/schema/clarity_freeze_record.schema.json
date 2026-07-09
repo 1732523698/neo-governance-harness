@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:clarity_freeze_record",
+  "title": "NEO 4.0 P4-AUTONOMY C5 frozen-plan record (one JSONL line, tamper-EVIDENT)",
+  "_home": "<RunRoot>/clarity_freeze_ledger.jsonl - append-only; a freeze is IMMUTABLE, a revision is a NEW record with plan_round+1 (strict +1 from 1, re-verified at read); record_sha256 = body hash excluding itself (NB-4), re-derived at every read.",
+  "_status": "INSTALLED 4.0-P4-C5 (schema gate cleared 2026-07-07, Raphael-recorded, G-1 folded). Spec 10652365 sec-4 C5/C6 + sec-0 NB-4. Unresolved blocking ambiguity never reaches this record (the freeze BLOCKs on MUST_ASK), so blocking-class items REQUIRE their human-resolution triple here (if/then per class, const-based) AND (G-1, symmetric disjointness per the R1-3 principle) FORBID the documented_default field via the empty-enum ABSENT encoding; the documented_default clause symmetrically forbids the resolution triple. risk_rows additionalProperties:false deliberately has NO explicit_downgrade property - a downgrade-carrying row is schema-invalid in depth behind the frozen I8 code refusal. Pin refs are SessionRoot-relative rels ({rel,sha256} - the SafeRel form the bundle machinery consumes).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "run_id", "plan_round", "instruction_digest_ref", "ambiguity_register", "slice_plan", "boundary_to_row_mapping", "risk_rows", "judging_registrations", "gov_manifest_pin", "app_manifest_pin", "risk_register_pin", "attestation_records", "stamped_by", "timestamp_utc", "record_sha256"],
+  "properties": {
+    "schema_id": { "const": "neo:clarity_freeze_record" },
+    "run_id": { "type": "string", "minLength": 1 },
+    "plan_round": { "type": "string", "pattern": "^[1-9][0-9]*$" },
+    "instruction_digest_ref": { "type": "string", "minLength": 1 },
+    "ambiguity_register": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["item_id", "surface", "classification"],
+        "properties": {
+          "item_id": { "type": "string", "minLength": 1 },
+          "surface": { "type": "string", "minLength": 1 },
+          "classification": { "type": "string", "enum": ["blocking_risk_tier", "blocking_state_surfaces", "blocking_governance_controls", "documented_default"] },
+          "resolution": { "type": "string", "minLength": 1 },
+          "resolved_by": { "type": "string", "minLength": 1 },
+          "resolved_date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+          "documented_default": { "type": "string", "minLength": 1 }
+        },
+        "allOf": [
+          { "if": { "properties": { "classification": { "const": "blocking_risk_tier" } }, "required": ["classification"] },
+            "then": { "required": ["resolution", "resolved_by", "resolved_date"],
+                      "properties": { "documented_default": { "enum": [] } } } },
+          { "if": { "properties": { "classification": { "const": "blocking_state_surfaces" } }, "required": ["classification"] },
+            "then": { "required": ["resolution", "resolved_by", "resolved_date"],
+                      "properties": { "documented_default": { "enum": [] } } } },
+          { "if": { "properties": { "classification": { "const": "blocking_governance_controls" } }, "required": ["classification"] },
+            "then": { "required": ["resolution", "resolved_by", "resolved_date"],
+                      "properties": { "documented_default": { "enum": [] } } } },
+          { "if": { "properties": { "classification": { "const": "documented_default" } }, "required": ["classification"] },
+            "then": { "required": ["documented_default"],
+                      "properties": { "resolution": { "enum": [] }, "resolved_by": { "enum": [] }, "resolved_date": { "enum": [] } } } }
+        ]
+      }
+    },
+    "slice_plan": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["slice_id", "approved_paths", "protected_paths", "acceptance_harness_paths", "risk_row_ref"],
+        "properties": {
+          "slice_id": { "type": "string", "minLength": 1 },
+          "approved_paths": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+          "protected_paths": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+          "protected_paths_declared_empty": { "type": "boolean" },
+          "acceptance_harness_paths": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+          "risk_row_ref": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "boundary_to_row_mapping": {
+      "type": "array", "minItems": 1,
+      "items": { "type": "object", "additionalProperties": false, "required": ["slice_id", "row_id"],
+                 "properties": { "slice_id": { "type": "string", "minLength": 1 }, "row_id": { "type": "string", "minLength": 1 } } }
+    },
+    "risk_rows": {
+      "type": "array", "minItems": 1,
+      "items": { "type": "object", "additionalProperties": false, "required": ["row_id", "risk_class"],
+                 "properties": { "row_id": { "type": "string", "minLength": 1 },
+                                 "risk_class": { "type": "string", "enum": ["high", "medium", "low"] },
+                                 "audit_tier": { "type": "string", "minLength": 1 },
+                                 "description": { "type": "string" } } }
+    },
+    "judging_registrations": {
+      "type": "array", "minItems": 1,
+      "items": { "type": "object", "additionalProperties": false, "required": ["slice_id", "harness_rel", "resolved_class"],
+                 "properties": { "slice_id": { "type": "string", "minLength": 1 }, "harness_rel": { "type": "string", "minLength": 1 },
+                                 "resolved_class": { "type": "string", "enum": ["constraint", "test_harness", "profile_risk"] } } }
+    },
+    "gov_manifest_pin": { "type": "object", "additionalProperties": false, "required": ["rel", "sha256"],
+      "properties": { "rel": { "type": "string", "minLength": 1 }, "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" } } },
+    "app_manifest_pin": { "type": "object", "additionalProperties": false, "required": ["rel", "sha256"],
+      "properties": { "rel": { "type": "string", "minLength": 1 }, "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" } } },
+    "risk_register_pin": { "type": "object", "additionalProperties": false, "required": ["rel", "sha256"],
+      "properties": { "rel": { "type": "string", "minLength": 1 }, "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" } } },
+    "attestation_records": {
+      "type": "array",
+      "items": { "type": "object", "additionalProperties": false, "required": ["gap", "attested_by", "run_scope", "attested_date"],
+                 "properties": { "gap": { "type": "string", "enum": ["denylist", "risk_tokens"] },
+                                 "attested_by": { "type": "string", "minLength": 1 }, "run_scope": { "type": "string", "minLength": 1 },
+                                 "attested_date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" } } }
+    },
+    "stamped_by": { "type": "string", "minLength": 1 },
+    "timestamp_utc": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" },
+    "record_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

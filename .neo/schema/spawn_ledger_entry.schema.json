@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:spawn_ledger_entry",
+  "title": "NEO 4.0 P4-AUTONOMY engine-side spawn-ledger entry (one JSONL line)",
+  "_home": "<RunRoot>/spawn_ledger.jsonl - append-only; written AT THE MOMENT the supervisor cold-spawns an isolated auditor; part of END evidence",
+  "_status": "INSTALLED 4.0-P4-C1C3-S1. Spec 0F4C8B81 section 0 lines 19-27 + NB-4: the slot seam consumes an auditor AUDIT_RESULT only when identity+bundle_ref+round CORRELATE with a prior entry here (Assert-NeoSpawnCorrelatedSlot). TAMPER-EVIDENT defense-in-depth on a shared single-user filesystem, NOT tamper-proof - hence END evidence. The external lane never fills the slot. Every field required.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "spawn_id", "auditor_identity", "bundle_ref", "round_id", "timestamp_utc"],
+  "properties": {
+    "run_id": { "type": "string", "minLength": 1 },
+    "spawn_id": { "type": "string", "minLength": 1 },
+    "auditor_identity": { "type": "string", "minLength": 1 },
+    "bundle_ref": { "type": "string", "minLength": 1 },
+    "round_id": { "type": "string", "minLength": 1 },
+    "timestamp_utc": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" }
+  }
+}

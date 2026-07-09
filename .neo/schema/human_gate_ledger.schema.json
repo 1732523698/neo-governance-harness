@@ -1,0 +1,33 @@
+{
+  "human_gate_ledger_schema_id": "neo:human_gate_ledger",
+  "title": "NEO 3.1-C Human-Gate Ledger schema (the authority AS4 binds an UNLOCK_RECORD to)",
+  "version": "3.1-C-P1S4",
+  "description": "Schema for .neo/gates/HUMAN_GATE_LEDGER.json. The ledger is the AUTHORITY: an UNLOCK_RECORD's gate_ref must resolve to a HUMAN entry here (gate_kind in {human_end_keep, human_start_approval}, authorized_by a human not a role) or AS4 FAILS. Resolved by verify_app_slice.ps1 from the NEO script root (the app tree cannot supply it); an operator/harness may override the path with -HumanGateLedger for fixtures. Append-only. PROVISIONAL-DEV: in dev this is a plain repo file the session principal can write, so it is tamper-EVIDENT not tamper-PROOF; it becomes un-forgeable only when section 4.9 (S5) puts it under a host-held root-of-trust + Option A (S6) ACLs it outside NEO's write scope.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["human_gate_ledger_schema_id", "root_of_trust", "entries"],
+  "properties": {
+    "human_gate_ledger_schema_id": { "const": "neo:human_gate_ledger" },
+    "root_of_trust": { "type": "string", "enum": ["provisional-dev", "host-anchored"], "description": "'provisional-dev' in dev (tamper-evident); 'host-anchored' only once S5/S6 place it outside the principal's write scope." },
+    "note": { "type": "string" },
+    "entries": {
+      "type": "array",
+      "description": "Append-only recorded human gate authorizations.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["gate_ref", "gate_kind", "authorized_by", "recorded_at", "app_slug", "authorized_paths"],
+        "properties": {
+          "gate_ref": { "type": "string", "minLength": 1, "description": "Convention: keyed to a roadmap section 8 decision-log id, e.g. '2026-06-30-P1-S3-END-KEEP'." },
+          "gate_kind": { "type": "string", "enum": ["human_end_keep", "human_start_approval"], "description": "The human gate that discharged this. A role/agent self-grant is not representable." },
+          "authorized_by": { "type": "string", "minLength": 1, "description": "The HUMAN principal (e.g. 'Raphael'). A role/agent value is rejected by AS4." },
+          "recorded_at": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+          "app_slug": { "type": "string", "minLength": 1, "description": "Which app this gate authorizes touches in." },
+          "authorized_paths": { "type": "array", "items": { "type": "string", "minLength": 1 }, "description": "Exact repo-relative locked paths this gate authorizes. AS4 requires every touched denylisted path to be named here." },
+          "decision_log_ref": { "type": "string", "description": "Human-readable cross-reference to the roadmap section 8 decision-log entry." },
+          "note": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:architecture",
+  "title": "NEO 4.0 ARCHITECTURE",
+  "_home": "./program/ARCHITECTURE.json (JSON authoritative per Q1)",
+  "_status": "INSTALLED 4.0-P3-A (from the KEPT 4.0 Session-0 draft). Live spine schema. Strong-producer artifact (D6: architecture is strong-only, never cheap-produced).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["architecture_id", "architecture_version", "components", "interfaces", "disjoint_scope_map", "_provenance"],
+  "properties": {
+    "architecture_id": { "type": "string", "minLength": 1 },
+    "architecture_version": { "type": "string" },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "responsibility", "owns_paths"],
+        "properties": {
+          "id": { "type": "string" },
+          "responsibility": { "type": "string" },
+          "owns_paths": { "type": "array", "items": { "type": "string" }, "description": "Root-relative './...' paths this component owns. Basis of disjoint-scope concurrency (gated, D1)." },
+          "depends_on": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "interfaces": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["id", "between", "contract"], "properties": { "id": { "type": "string" }, "between": { "type": "array", "items": { "type": "string" }, "minItems": 2, "maxItems": 2 }, "contract": { "type": "string" } } } },
+    "disjoint_scope_map": {
+      "type": "array",
+      "description": "Declares which component path-sets are provably DISJOINT (input to gated concurrency). Overlap here => serial-only. Consumed by the S6 ownership-lease design, NOT enabled until S6->SHIP + one-time human gate (A5).",
+      "items": { "type": "object", "additionalProperties": false, "required": ["group", "paths", "proven_disjoint"], "properties": { "group": { "type": "string" }, "paths": { "type": "array", "items": { "type": "string" } }, "proven_disjoint": { "type": "boolean" } } }
+    },
+    "_provenance": { "$ref": "neo:common_provenance_envelope" }
+  }
+}

@@ -1,0 +1,263 @@
+{
+    "manifest":  "NEO 3.0 Session 2 GOLDEN CORPUS MANIFEST",
+    "generated_utc":  "2026-06-27T01:04:05Z",
+    "neo_root":  "S:\\NEO",
+    "git_repo":  false,
+    "hash_algorithm":  "SHA256",
+    "control_doc_requirement":  "Session 2 scope item 1 (GOLDEN CORPUS): freeze the canonical proof set as immutable, per-item-hashed records; every corpus item + SHA-256 + source + expected classification.",
+    "baseline_gate":  "S1 PASSED: all 5 nets exit 0 (verdict lines == Session 1); all 46 Session-1 pins re-hashed and MATCH (zero drift).",
+    "corpus_item_count":  18,
+    "corpus_items":  [
+                         {
+                             "corpus_path":  "GOLDEN_CORPUS/proof/v2.6_session0_closeout/V2.6_CLOSEOUT_REPORT.md",
+                             "sha256":  "2009DEDEEA90C160BF4F0333105079E8850FD671029EC68BE0F2F65D3B257846",
+                             "source":  ".neo/_v2.6_rollback/V2.6_CLOSEOUT_REPORT.md",
+                             "expected_classification":  "real-app green proof (v2.6 Session 0 closeout: profile-restore + 5-net green)"
+                         },
+                         {
+                             "corpus_path":  "GOLDEN_CORPUS/proof/session1_baseline/FREEZE_INVENTORY.json",
+                             "sha256":  "D14055A8E0FF8F25E936FA7CE07A608D46FF6B7754DF7AC44A7728CD3354470B",
+                             "source":  ".neo/_v3.0/session1/FREEZE_INVENTORY.json",
+                             "expected_classification":  "Session 1 frozen baseline reference (46-file surface + pins, machine)"
+                         },
+                         {
+                             "corpus_path":  "GOLDEN_CORPUS/proof/session1_baseline/FREEZE_INVENTORY.md",
+                             "sha256":  "FFBC5BF6734586BABEC34D80C16916A53EE7C7B2244D4697CF3F14D5B42922F3",
+                             "source":  ".neo/_v3.0/session1/FREEZE_INVENTORY.md",
+                             "expected_classification":  "Session 1 frozen baseline reference (human)"
+                         },
+                         {
+                             "corpus_path":  "GOLDEN_CORPUS/proof/session1_baseline/CONCURRENCY_LOCK.md",
+                             "sha256":  "BF42B05ACA44E4DE58B056A66DABCF336FAE46DFB66BE049DAAE11DBA7BA9AF3",
+                             "source":  ".neo/_v3.0/session1/CONCURRENCY_LOCK.md",
+                             "expected_classification":  "Session 1 single-owner concurrency doctrine (context)"
+                         },
+                         {
+                             "corpus_path":  "GOLDEN_CORPUS/run_logs_session2_green/net_lint_skills.txt",
+                             "sha256":  "C2BCC16AEDC3070877116380251125B724EDBD475D26AC5EE5A5D1328CE13B0E",
+                             "source":  "captured 2026-06-27 this session",
+                             "expected_classification":  "live green replay evidence (Session 2 rerun); net exit 0"
+                         },
+                         {
+                             "corpus_path":  "GOLDEN_CORPUS/run_logs_session2_green/net_regression_smoke.txt",
+                             "sha256":  "8DA413F44AC83715BB09A224006FF1396FC17A4F51DA7A71EF5A903F285BE5B8",
+                             "source":  "captured 2026-06-27 this session",
+                             "expected_classification":  "live green replay evidence (Session 2 rerun); net exit 0"
+                         },
+                         {
+                             "corpus_path":  "GOLDEN_CORPUS/run_logs_session2_green/net_scenario_sim.txt",
+                             "sha256":  "BA913848BC06C9A1AE69C16256F84A51762286DC29CA8621B0D913D5A760D909",
+                             "source":  "captured 2026-06-27 this session",
+                             "expected_classification":  "live green replay evidence (Session 2 rerun); net exit 0"
+                         },
+                         {
+                             "corpus_path":  "GOLDEN_CORPUS/run_logs_session2_green/net_c1_golden_matrix.txt",
+                             "sha256":  "096852732A81ED76212CAC240CCECC9B5AD932B1F6AAC2D7FBEC1DD0E1E89377",
+                             "source":  "captured 2026-06-27 this session",
+                             "expected_classification":  "live green replay evidence (Session 2 rerun); net exit 0"
+                         },
+                         {
+                             "corpus_path":  "GOLDEN_CORPUS/run_logs_session2_green/net_app_adapter_fixture_suite.txt",
+                             "sha256":  "DABDFD71CBFB60967CA8B2F609B4E4B83F40D5F1DEEC1146569AC5D4048D1C38",
+                             "source":  "captured 2026-06-27 this session",
+                             "expected_classification":  "live green replay evidence (Session 2 rerun); net exit 0"
+                         },
+                         {
+                             "corpus_path":  "GOLDEN_CORPUS/source_identity/lint_skills.ps1",
+                             "sha256":  "F76B28910A95CF83298C4C3BB0005BE7C126C584A49BAEB21E054F3C075239AF",
+                             "source":  ".neo/scripts/lint_skills.ps1",
+                             "expected_classification":  "producer identity, byte-copied (net #1)",
+                             "live_surface_sha256":  "F76B28910A95CF83298C4C3BB0005BE7C126C584A49BAEB21E054F3C075239AF",
+                             "byte_copy_matches_live":  true,
+                             "session1_inventory_sha256":  "F76B28910A95CF83298C4C3BB0005BE7C126C584A49BAEB21E054F3C075239AF",
+                             "in_check_H_frozen_core":  false
+                         },
+                         {
+                             "corpus_path":  "GOLDEN_CORPUS/source_identity/regression_smoke.ps1",
+                             "sha256":  "47E9C957062C8F54B2D6FF05AE31C014450F0C1806D2431C844DFDC2BFD582CF",
+                             "source":  ".neo/scripts/regression_smoke.ps1",
+                             "expected_classification":  "producer identity, byte-copied (net #2)",
+                             "live_surface_sha256":  "47E9C957062C8F54B2D6FF05AE31C014450F0C1806D2431C844DFDC2BFD582CF",
+                             "byte_copy_matches_live":  true,
+                             "session1_inventory_sha256":  "47E9C957062C8F54B2D6FF05AE31C014450F0C1806D2431C844DFDC2BFD582CF",
+                             "in_check_H_frozen_core":  false
+                         },
+                         {
+                             "corpus_path":  "GOLDEN_CORPUS/source_identity/scenario_sim.ps1",
+                             "sha256":  "0079284E59437ABBE5D7F1228160D1AA36D6FE00143541D3C33FDE7FF882BA4C",
+                             "source":  ".neo/scripts/scenario_sim.ps1",
+                             "expected_classification":  "producer identity, byte-copied (net #3)",
+                             "live_surface_sha256":  "0079284E59437ABBE5D7F1228160D1AA36D6FE00143541D3C33FDE7FF882BA4C",
+                             "byte_copy_matches_live":  true,
+                             "session1_inventory_sha256":  "0079284E59437ABBE5D7F1228160D1AA36D6FE00143541D3C33FDE7FF882BA4C",
+                             "in_check_H_frozen_core":  false
+                         },
+                         {
+                             "corpus_path":  "GOLDEN_CORPUS/source_identity/c1_golden_matrix.ps1",
+                             "sha256":  "AD4928B397E98F51377BF09F1F531F77B85C234871518BB0B24443ED891C1CD6",
+                             "source":  ".neo/scripts/c1_golden_matrix.ps1",
+                             "expected_classification":  "producer identity, byte-copied (net #4)",
+                             "live_surface_sha256":  "AD4928B397E98F51377BF09F1F531F77B85C234871518BB0B24443ED891C1CD6",
+                             "byte_copy_matches_live":  true,
+                             "session1_inventory_sha256":  "AD4928B397E98F51377BF09F1F531F77B85C234871518BB0B24443ED891C1CD6",
+                             "in_check_H_frozen_core":  false
+                         },
+                         {
+                             "corpus_path":  "GOLDEN_CORPUS/source_identity/app_adapter_fixture_suite.ps1",
+                             "sha256":  "DCC1EEC8B06DCF864BB7F009631CA41E4C709E7A6064808FBAF2BE2D429902A1",
+                             "source":  ".neo/scripts/app_adapter_fixture_suite.ps1",
+                             "expected_classification":  "producer identity, byte-copied (net #5)",
+                             "live_surface_sha256":  "DCC1EEC8B06DCF864BB7F009631CA41E4C709E7A6064808FBAF2BE2D429902A1",
+                             "byte_copy_matches_live":  true,
+                             "session1_inventory_sha256":  "DCC1EEC8B06DCF864BB7F009631CA41E4C709E7A6064808FBAF2BE2D429902A1",
+                             "in_check_H_frozen_core":  false
+                         },
+                         {
+                             "corpus_path":  "GOLDEN_CORPUS/negatives/app_adapter_fixture_suite.cases.json",
+                             "sha256":  "AE0EE5626F341E71F5E349C4935981B9EA005C41C54B0AA1C8BBD8B6512AB197",
+                             "source":  "authored this session from producer + run log",
+                             "expected_classification":  "negative-expectation tuples (24 verify-neg + 4 tamper + 3 green + 1 positive)"
+                         },
+                         {
+                             "corpus_path":  "GOLDEN_CORPUS/negatives/c1_golden_matrix.cases.json",
+                             "sha256":  "72C84EC4B349ECB0E9CD735BDA093BBC103BAFF70B2017172622FB6CB2198167",
+                             "source":  "authored this session from producer + run log",
+                             "expected_classification":  "negative-expectation tuples (2 valid + 8 invalid, C1-isolated)"
+                         },
+                         {
+                             "corpus_path":  "GOLDEN_CORPUS/negatives/scenario_sim.cases.json",
+                             "sha256":  "83ACF5CD65F192BA27C15900728F85EFC8135F6AA93DFEC71956318A3B58480A",
+                             "source":  "authored this session from producer + run log",
+                             "expected_classification":  "negative-expectation tuples (7 RT scenarios incl. 3 fail-closed)"
+                         },
+                         {
+                             "corpus_path":  "GOLDEN_CORPUS/negatives/regression_smoke.cases.json",
+                             "sha256":  "71746BEFE80AFE99BC01C50C6FE4966434506581EC4AC9D24DF5A6B050205B0B",
+                             "source":  "authored this session from producer + run log",
+                             "expected_classification":  "negative-expectation tuples (green + C12 + C8 negatives)"
+                         }
+                     ],
+    "referenced_producers_note":  "These bytes are NOT copied into the corpus (already frozen on the live surface). They are pinned here by SHA-256, re-verified this session against Session 1. They depend on the live surface remaining unchanged (tamper-evident via these hashes, not tamper-proof). app_end_evidence.schema.json is flagged UNPINNED.",
+    "referenced_producers":  [
+                                 {
+                                     "referenced_path":  ".neo/scripts/verify_app_slice.ps1",
+                                     "role":  "app adapter engine invoked by app_adapter_fixture_suite",
+                                     "sha256":  "E6A9A6EED034B846A263F37045F7012263A9D1C68C86D128AADEF8D5BA89AD00",
+                                     "session1_inventory_sha256":  "E6A9A6EED034B846A263F37045F7012263A9D1C68C86D128AADEF8D5BA89AD00",
+                                     "matches_session1":  true,
+                                     "in_check_H_frozen_core":  false
+                                 },
+                                 {
+                                     "referenced_path":  ".neo/scripts/check_app_end_evidence.ps1",
+                                     "role":  "app end-evidence checker invoked by app_adapter_fixture_suite",
+                                     "sha256":  "A778D58B139D450A200808CA366E56AA5691D527F103FD9BBDB6FC419B79EB87",
+                                     "session1_inventory_sha256":  "A778D58B139D450A200808CA366E56AA5691D527F103FD9BBDB6FC419B79EB87",
+                                     "matches_session1":  true,
+                                     "in_check_H_frozen_core":  false
+                                 },
+                                 {
+                                     "referenced_path":  ".neo/scripts/verify_session.ps1",
+                                     "role":  "C1-C13 audit net invoked by c1_golden_matrix + regression_smoke",
+                                     "sha256":  "29ABE03446B0BCE3A44D13E5E657499FE35933B44D509E3C7D43AA90D14BAC80",
+                                     "session1_inventory_sha256":  "29ABE03446B0BCE3A44D13E5E657499FE35933B44D509E3C7D43AA90D14BAC80",
+                                     "matches_session1":  true,
+                                     "in_check_H_frozen_core":  true
+                                 },
+                                 {
+                                     "referenced_path":  ".neo/scripts/new_session.ps1",
+                                     "role":  "session scaffolder invoked by regression_smoke",
+                                     "sha256":  "E2D5C3F3E5ED1D1A556783356D3207C2419D0252E03E4B4D5CB75A01D87B9BF4",
+                                     "session1_inventory_sha256":  "E2D5C3F3E5ED1D1A556783356D3207C2419D0252E03E4B4D5CB75A01D87B9BF4",
+                                     "matches_session1":  true,
+                                     "in_check_H_frozen_core":  true
+                                 },
+                                 {
+                                     "referenced_path":  ".neo/scripts/assemble_auditor_input.ps1",
+                                     "role":  "auditor-input assembler invoked by regression_smoke",
+                                     "sha256":  "203C7BA20CEA3B31E034E046F49EE733F227F5094EB14B1DF7B1F06A8DC80AD2",
+                                     "session1_inventory_sha256":  "203C7BA20CEA3B31E034E046F49EE733F227F5094EB14B1DF7B1F06A8DC80AD2",
+                                     "matches_session1":  true,
+                                     "in_check_H_frozen_core":  true
+                                 },
+                                 {
+                                     "referenced_path":  ".neo/schema/session_contract.schema.json",
+                                     "role":  "schema enforced by verify_session C1",
+                                     "sha256":  "07957079AEFC1A8D8B38C1D5D68FBCAA13B59C714DEC7DFD6D6E2E8CEC324ACF",
+                                     "session1_inventory_sha256":  "07957079AEFC1A8D8B38C1D5D68FBCAA13B59C714DEC7DFD6D6E2E8CEC324ACF",
+                                     "matches_session1":  true,
+                                     "in_check_H_frozen_core":  true
+                                 },
+                                 {
+                                     "referenced_path":  ".neo/schema/checkpoint.schema.json",
+                                     "role":  "schema (checkpoint)",
+                                     "sha256":  "6C836D0CCA7AD6B98D6F05814D19B0B237EDFF65B2D86D2048639CB0C45F89A3",
+                                     "session1_inventory_sha256":  "6C836D0CCA7AD6B98D6F05814D19B0B237EDFF65B2D86D2048639CB0C45F89A3",
+                                     "matches_session1":  true,
+                                     "in_check_H_frozen_core":  true
+                                 },
+                                 {
+                                     "referenced_path":  ".neo/schema/module_contract.schema.json",
+                                     "role":  "schema (module contract)",
+                                     "sha256":  "928A98973B31B1271B44499009778A0F13C1243EE3410C2106A85081270E7C5B",
+                                     "session1_inventory_sha256":  "928A98973B31B1271B44499009778A0F13C1243EE3410C2106A85081270E7C5B",
+                                     "matches_session1":  true,
+                                     "in_check_H_frozen_core":  true
+                                 },
+                                 {
+                                     "referenced_path":  ".neo/schema/residue_report.schema.json",
+                                     "role":  "schema (residue report)",
+                                     "sha256":  "423F4F375E9F75D5B9C74D87AEEE85BE2C294F6B0F187ABC38AC52AAD14930DE",
+                                     "session1_inventory_sha256":  "423F4F375E9F75D5B9C74D87AEEE85BE2C294F6B0F187ABC38AC52AAD14930DE",
+                                     "matches_session1":  true,
+                                     "in_check_H_frozen_core":  true
+                                 },
+                                 {
+                                     "referenced_path":  ".neo/schema/app_end_evidence.schema.json",
+                                     "role":  "schema consumed by check_app_end_evidence (UNPINNED - see HOST_REGISTRY_DESIGN custody gap)",
+                                     "sha256":  "9BB87D44B8FFD5577C6ECCEEC9810C90CF48EC4CC9CC1031FFC14EF7D6F581D2",
+                                     "session1_inventory_sha256":  "9BB87D44B8FFD5577C6ECCEEC9810C90CF48EC4CC9CC1031FFC14EF7D6F581D2",
+                                     "matches_session1":  true,
+                                     "in_check_H_frozen_core":  false
+                                 },
+                                 {
+                                     "referenced_path":  ".neo/templates/session_contract.template.json",
+                                     "role":  "base contract fixture for c1_golden_matrix",
+                                     "sha256":  "1A0449A32D29429DBA400E4CF3515C99C696373289FBAD8527434EA2FA8F7913",
+                                     "session1_inventory_sha256":  "1A0449A32D29429DBA400E4CF3515C99C696373289FBAD8527434EA2FA8F7913",
+                                     "matches_session1":  true,
+                                     "in_check_H_frozen_core":  false
+                                 },
+                                 {
+                                     "referenced_path":  ".neo/NEO_RISK_TIERS.md",
+                                     "role":  "RT-tier rules source for scenario_sim",
+                                     "sha256":  "82F67362F3C17A3DEA59EEA0B709538FB27AE8D6F0E4BC786D4A17B3D184CBF7",
+                                     "session1_inventory_sha256":  "82F67362F3C17A3DEA59EEA0B709538FB27AE8D6F0E4BC786D4A17B3D184CBF7",
+                                     "matches_session1":  true,
+                                     "in_check_H_frozen_core":  false
+                                 },
+                                 {
+                                     "referenced_path":  ".neo/NEO_RELEASE_DISCIPLINE.md",
+                                     "role":  "DEP-GUARD/release rules source for scenario_sim",
+                                     "sha256":  "03F9BDC1ACC85FA26FA68061B08D55678DA49B35D59C468BE9302DE3451AA0E1",
+                                     "session1_inventory_sha256":  "03F9BDC1ACC85FA26FA68061B08D55678DA49B35D59C468BE9302DE3451AA0E1",
+                                     "matches_session1":  true,
+                                     "in_check_H_frozen_core":  false
+                                 },
+                                 {
+                                     "referenced_path":  ".neo/examples/DUMMY_APP.md",
+                                     "role":  "dummy-app fixture for scenario_sim",
+                                     "sha256":  "77EE131181670C525F84AE671E2622498C9D60C579526D6EEF0CA1BA619D68FE",
+                                     "session1_inventory_sha256":  "77EE131181670C525F84AE671E2622498C9D60C579526D6EEF0CA1BA619D68FE",
+                                     "matches_session1":  true,
+                                     "in_check_H_frozen_core":  false
+                                 },
+                                 {
+                                     "referenced_path":  "modules/unified-analytics-rental-platform/NEO_APP_PROFILE.md",
+                                     "role":  "app profile (DENY globs etc.) consumed by verify_app_slice; SHA 71BAECB0 = ratified post-Session-0",
+                                     "sha256":  "86C3E96BBB94D5F6694264573E1CEDBF714A90EBAAE481DA54FD2671C5FFF979",
+                                     "session1_inventory_sha256":  "86C3E96BBB94D5F6694264573E1CEDBF714A90EBAAE481DA54FD2671C5FFF979",
+                                     "matches_session1":  true,
+                                     "in_check_H_frozen_core":  false
+                                 }
+                             ]
+}

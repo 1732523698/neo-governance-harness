@@ -1,0 +1,40 @@
+{
+  "anchor_schema_id": "neo:root_of_trust_anchor",
+  "title": "NEO 3.1 P1-S5 section 4.9 root-of-trust anchor schema",
+  "version": "3.1-S5",
+  "description": "Schema for the section 4.9 ROOT_OF_TRUST_ANCHOR: a NAMED, host-held attestation stored OFF the governed surface (S:\\NEO_backups\\_neo_root_of_trust\\...), outside NEO's write scope. It records host-held SHA-256 hashes of the artifacts that cannot pin themselves: lint_skills.ps1 (section 4.4a lint-self, otherwise circular) and .neo\\gates\\HUMAN_GATE_LEDGER.json (the RT4-R1 authority). verify_root_of_trust.ps1 consults this anchor (resolved from a FIXED host default; -Anchor override for trusted operators only, mirroring verify_app_slice's -HumanGateLedger) and fails closed on absent / malformed / wrong id / scope mismatch / protected-file drift, BEFORE lint's or AS4's verdict is trusted. PROVISIONAL-DEV honesty: in DEV the anchor is a plain file the session principal can write, so custody='provisional-dev' -> tamper-EVIDENT not tamper-PROOF. Genuine un-forgeability arrives only when Option A (S6) places it under an admin-owned ACL outside the principal's write scope (custody='host-anchored'); until then RT4-R1 PASS-WITH-AUTH is NOT trusted in PROD (the DEV->PROD push gate is the backstop).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["anchor_schema_id", "anchor_id", "custody", "anchor_scope", "protected"],
+  "properties": {
+    "anchor_schema_id": { "const": "neo:root_of_trust_anchor" },
+    "anchor_id": { "const": "neo:root_of_trust", "description": "The NAMED anchor identity. A verifier that loads an anchor whose anchor_id is not exactly this fails closed." },
+    "custody": {
+      "type": "string",
+      "enum": ["provisional-dev", "host-anchored"],
+      "description": "'provisional-dev' = a plain host file the session principal can still write (tamper-evident only) -> DEV. 'host-anchored' = under an admin-owned ACL outside the principal's write scope (Option A / S6) -> the only value a host-anchored trust claim may be honored against. NEVER 'host-anchored' in dev."
+    },
+    "anchor_scope": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Absolute path of the governed NEO root this anchor attests (e.g. '<NEO_ROOT>' for the dev anchor, 'S:\\NEO' for the prod anchor). verify_root_of_trust.ps1 fails closed if this != the -NeoRoot being verified, so a dev anchor cannot be reused to attest prod (mirrors the app-tree-cannot-supply-authority precedent)."
+    },
+    "created_at": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+    "note": { "type": "string" },
+    "protected": {
+      "type": "array",
+      "minItems": 1,
+      "description": "One entry per artifact the anchor attests. Its on-disk SHA-256 (under anchor_scope) MUST equal sha256 or verification fails closed.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "role", "sha256"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1, "description": "Repo-relative path (from anchor_scope) of the attested artifact." },
+          "role": { "type": "string", "enum": ["lint-self", "human-gate-ledger"], "description": "Which circular-trust gap this entry closes: 'lint-self' (section 4.4a) or 'human-gate-ledger' (RT4-R1 authority anchoring)." },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$", "description": "Lowercase 64-hex host-held SHA-256 of the artifact at anchor-cut time." }
+        }
+      }
+    }
+  }
+}

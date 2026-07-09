@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:run_manifest",
+  "title": "NEO 4.0 P4-AUTONOMY run-level manifest (persisted run identity + D-CAP breaker caps)",
+  "_home": "<RunRoot>/run_manifest.json (per autonomous run; written ONCE at run start; resume READS it, never rewrites)",
+  "_status": "INSTALLED 4.0-P4-C1C3-S1. Spec 0F4C8B81 section 4 C3 (D-CAP recorded 2026-07-05): caps are REQUIRED config - never no-cap-by-default; started_at_utc is the PERSISTED wall-clock origin (crash-safe, not process uptime). STRICT POSITIVITY (> 0) of each cap is enforced fail-closed by the supervisor (Assert-NeoRunCapsValid, reason CAPS_INVALID); the schema floor is minimum 0 because exclusiveMinimum is outside the installed validator's fail-closed keyword set.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "run_id", "started_at_utc", "caps"],
+  "properties": {
+    "schema_id": { "const": "neo:run_manifest" },
+    "run_id": { "type": "string", "minLength": 1 },
+    "started_at_utc": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" },
+    "caps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_fix_rounds_per_slice", "max_external_calls", "max_wall_clock_hours", "max_spend"],
+      "properties": {
+        "max_fix_rounds_per_slice": { "type": "number", "minimum": 0 },
+        "max_external_calls": { "type": "number", "minimum": 0 },
+        "max_wall_clock_hours": { "type": "number", "minimum": 0 },
+        "max_spend": { "type": "number", "minimum": 0 }
+      }
+    }
+  }
+}

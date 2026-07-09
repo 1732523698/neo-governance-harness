@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:input_packet",
+  "title": "NEO 4.0 Sub-session Input Packet",
+  "_status": "INSTALLED 4.0-P3-A (from the KEPT 4.0 Session-0 draft, Addendum A3). Live spine schema. Sub-sessions receive context ONLY through explicit, allowlisted, on-disk repo text packets, each with a content HASH and a declared SCOPE boundary. First-class isolation/custody/reproducibility/rollover element.",
+  "description": "The ONLY sanctioned channel by which a master delivers context to a dispatched sub-session (and by which the audit bundle is assembled). No out-of-band prompt text, no implicit inheritance: if it isn't in an allowlisted, hashed input packet, the sub-session did not receive it. Fail-closed (A7): a packet with a missing/unknown hash, unresolved reference, or no scope declaration is BLOCKED from consumption.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["packet_id", "packet_kind", "_provenance", "allowlist", "scope_boundary", "self_hash", "referenced_artifacts"],
+  "properties": {
+    "packet_id": { "type": "string", "minLength": 1 },
+    "packet_kind": {
+      "type": "string",
+      "enum": ["subsession_start", "audit_bundle_feed", "handoff_resume"],
+      "description": "start = master->builder dispatch; audit_bundle_feed = assembled cold-auditor input (D3); handoff_resume = fresh-master resume feed (D7)."
+    },
+    "_provenance": { "$ref": "neo:common_provenance_envelope" },
+    "allowlist": {
+      "type": "array",
+      "description": "The EXHAUSTIVE set of on-disk, root-relative './...' text files/artifacts the receiver is permitted to read for this task. Anything outside this list is out-of-scope by construction.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "content_hash", "role"],
+        "properties": {
+          "path": { "type": "string", "description": "Root-relative './...' path. No absolutes/drive letters." },
+          "content_hash": { "type": "string", "description": "sha256 of the referenced file at packet-build time. Receiver re-hashes; mismatch => BLOCK (A6/A7)." },
+          "role": { "type": "string", "description": "Why this file is in scope (e.g. constraint_package, architecture, prior_subsession_end)." }
+        }
+      }
+    },
+    "scope_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approved_paths", "protected_paths", "declared_surfaces", "risk_tier"],
+      "properties": {
+        "approved_paths": { "type": "array", "items": { "type": "string" }, "description": "Root-relative './...' write scope. Reconciles with session_contract.approved_paths semantics (subset rule) but host-independent." },
+        "protected_paths": { "type": "array", "items": { "type": "string" }, "description": "Never-touch. Reconciles with session_contract.protected_paths." },
+        "declared_surfaces": { "type": "array", "items": { "type": "string", "enum": ["filesystem", "database", "object_storage", "external_account"] } },
+        "risk_tier": { "type": "string", "description": "Risk class of the dispatched sub-session (drives D4 audit tier + D5 gate policy). UNKNOWN => BLOCKED (A7)." }
+      }
+    },
+    "referenced_artifacts": {
+      "type": "array",
+      "description": "Structured evidence the receiver may rely on as authority (e.g. current CONSTRAINT_PACKAGE id+hash). Distinct from allowlist (raw readable files) by being semantic dependencies.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["artifact_id", "content_hash"],
+        "properties": { "artifact_id": { "type": "string" }, "content_hash": { "type": "string" } }
+      }
+    },
+    "self_hash": { "type": "string", "description": "sha256 of this packet body (excluding this field). The value referenced by _provenance.source_input_packets in downstream artifacts." }
+  }
+}

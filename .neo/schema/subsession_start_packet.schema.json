@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:subsession_start_packet",
+  "title": "NEO 4.0 Sub-session START packet",
+  "_home": "./NEO_SESSION/<slug>/ (per-subsession; A-BRIDGE cat 2)",
+  "_status": "INSTALLED 4.0-P3-A (from the KEPT 4.0 Session-0 draft). Live spine schema. A specialization of neo:input_packet (packet_kind=subsession_start) carrying the builder's marching orders. Reconciles with the session_contract spine (approved_paths/protected_paths/test_plan/stop_conditions) but host-independent (root-relative).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["input_packet", "goal", "test_plan", "stop_conditions", "risk_class"],
+  "properties": {
+    "input_packet": { "$ref": "neo:input_packet" },
+    "goal": { "type": "string", "minLength": 1 },
+    "test_plan": { "type": "array", "items": { "type": "string" }, "description": "Exact test command(s) promised at dispatch. Reconciles with session_contract.test_plan (C6 drift guard)." },
+    "stop_conditions": { "type": "array", "items": { "type": "string", "enum": ["scope_breach", "budget_breach", "ambiguity", "external_boundary"] }, "description": "Verbatim from session_contract.stop_conditions enum." },
+    "risk_class": { "type": "string", "enum": ["high", "medium", "low"], "description": "Drives D4 audit tier and D5 gate handling. UNKNOWN => BLOCKED (A7)." }
+  }
+}

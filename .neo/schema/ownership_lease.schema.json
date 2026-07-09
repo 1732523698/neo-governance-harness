@@ -1,0 +1,33 @@
+{
+  "ownership_lease_schema_id": "neo:ownership_lease",
+  "title": "NEO 3.1 P1-S6 section 4.8 ownership-lease schema",
+  "version": "3.1-S6",
+  "description": "Schema for .neo\\gates\\OWNERSHIP_LEASE.json - the session-spanning ownership record for the section 4.8 concurrency-prevention substrate. A session must HOLD a live lease for its scope before editing the governed custody surface; ownership_lease.ps1 guards every acquire/release/reclaim with an OS named mutex (real, OS-enforced mutual exclusion of the critical section) and records durable ownership here. HONEST custody: an OS mutex cannot span a multi-process NEO session, so the mutex delivers atomic acquisition + real refusal of a SIMULTANEOUS acquirer, while THIS FILE carries the session-long holder/expiry and is principal-writable -> tamper-EVIDENT, not tamper-PROOF. A non-cooperating process that edits the surface without calling acquire is NOT blocked by S6 (that non-bypassability is Option A / S7 filesystem ACLs). root_of_trust stays 'provisional-dev' until then. Append/replace by holder; expired leases are reclaimable (logged reclaimed_from) but a LIVE lease is never stolen.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["ownership_lease_schema_id", "root_of_trust", "leases"],
+  "properties": {
+    "ownership_lease_schema_id": { "const": "neo:ownership_lease" },
+    "root_of_trust": { "type": "string", "enum": ["provisional-dev", "host-anchored"], "description": "'provisional-dev' in dev (the file is principal-writable; the OS mutex is the real layer). 'host-anchored' only once Option A / S7 ACLs the file outside the principal's write scope." },
+    "note": { "type": "string" },
+    "leases": {
+      "type": "array",
+      "description": "Live + recently-reclaimed lease records, one active per scope.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["scope", "holder", "acquired_at", "expiry"],
+        "properties": {
+          "scope": { "type": "string", "minLength": 1, "description": "The lease scope unit. Reserved token 'GOVERNED-ROOT' = whole governed surface, exclusive against any sub-scope. Any other string = a per-slice/per-scope lease; disjoint scopes run in parallel (4.0 hybrid), same scope is serialized." },
+          "holder": { "type": "string", "minLength": 1, "description": "Caller-supplied STABLE session identity (not the pid; pid is metadata). Only this holder may release/refresh its own lease." },
+          "pid": { "type": "integer", "description": "Metadata: the OS pid of the acquiring process (short-lived; informational only)." },
+          "host": { "type": "string", "description": "Metadata: machine/user of the acquirer." },
+          "acquired_at": { "type": "string", "description": "ISO-8601 UTC acquire time." },
+          "expiry": { "type": "string", "description": "ISO-8601 UTC expiry. After this, the lease is reclaimable (no deadlock); before it, the scope is held (bounded wait)." },
+          "reclaimed_from": { "type": "string", "description": "Set when this lease reclaimed an EXPIRED prior lease: the prior holder id + time. Reclaim is always LOGGED here, never a silent steal; a LIVE lease is never reclaimed." },
+          "note": { "type": "string" }
+        }
+      }
+    }
+  }
+}

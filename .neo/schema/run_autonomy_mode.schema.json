@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:run_autonomy_mode",
+  "title": "NEO AUTO-MODE per-run autonomy record (NEO_AUTOMODE_DESIGN_v1 rev5 sec 3A)",
+  "_home": "<RunRoot>/autonomy_mode.json (MANAGER-written at run setup BEFORE Invoke-NeoRunPrepare; the ENGINE only READS it, through the single accessor Get-NeoRunAutonomyMode in orch_run.ps1)",
+  "_status": "INSTALLED slice-1d 2026-07-08 (spec sha8 4F549F3A; ADDITIVE schema-add recorded with the v7 stop-and-wait ledger). Fail-closed two-lane routing: record ABSENT => interactive (gate_ref segment NONE); record PRESENT but ANY chain link invalid (unparseable / schema-invalid / run_id mismatch / autonomy_mode not case-exact 'auto' / attestation refusal / hash mismatch / envelope breach) => PARK + NOTIFY at prepare, no START package in EITHER mode. Unknown is NEVER coerced to auto.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "run_id", "autonomy_mode", "declared_by", "declared_at", "attestation_sha256"],
+  "properties": {
+    "schema_id": { "const": "neo:run_autonomy_mode" },
+    "run_id": { "type": "string", "minLength": 1, "description": "Must match the persisted run manifest's run_id case-exact; a mismatch parks the run at prepare." },
+    "autonomy_mode": { "type": "string", "enum": ["auto"], "description": "The ONLY legal value. 'Auto'/'AUTO'/blank/anything else is schema-invalid => park lane (never a silent interactive downgrade)." },
+    "declared_by": { "type": "string", "minLength": 1, "description": "The manager principal that declared this run AUTO at run setup." },
+    "declared_at": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" },
+    "attestation_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$", "description": "SHA-256 (lowercase) of the standing .neo/AUTO_MODE_ATTESTATION.md content; the engine re-hashes the on-disk attestation and requires a case-exact match (re-signing the attestation invalidates stale records)." }
+  }
+}

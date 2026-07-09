@@ -1,0 +1,22 @@
+{
+  "provenance_schema_id": "neo:artifact_provenance",
+  "title": "NEO 3.1-F Judging-Artifact Provenance Manifest (going-forward)",
+  "version": "3.1-F-P1S4",
+  "description": "Records, per judging-class artifact (constraint | test_harness | profile_risk), the authoring session and gate under which it was created or last relaxed. Going-forward by default; retroactive backfill of pre-3.1-F artifacts is a named scoped follow-on (budget). gate_ref CONVENTION (P1-S4 / OQ2): a roadmap section 8 decision-log id, the same key an UNLOCK_RECORD.gate_ref uses to bind to the human-gate ledger (.neo/gates/HUMAN_GATE_LEDGER.json). AS18 does not itself consume this manifest; RT4-R1 (P1-S4, section 4.7 gate binding) enforces the gate_ref->human-gate binding in AS4 for authorized locked-path edits. The P1-S3 PENDING placeholders are backfilled below to the recorded S3 END-keep decision-log id.",
+  "entries": [
+    {
+      "artifact": ".neo/schema/artifact_classes.json",
+      "class": "constraint",
+      "authoring_session": "P1-S3 (custody artifact classes, 3.1-F)",
+      "gate_ref": "2026-06-30-P1-S3-END-KEEP",
+      "note": "the class map itself; authored under P1-S3 START approval, kept at the recorded 2026-06-30 P1-S3 Raphael END=keep (roadmap section 8)"
+    },
+    {
+      "artifact": ".neo/scripts/verify_app_slice.ps1",
+      "class": "test_harness",
+      "authoring_session": "P1-S3 (AS18 added); prior baseline P1-S1/S2; P1-S4 (AS4 PASS-WITH-AUTH + AS15 invariant_preserved)",
+      "gate_ref": "2026-06-30-P1-S3-END-KEEP",
+      "note": "AS18 added in P1-S3 at the recorded 2026-06-30 END=keep; P1-S4 additively added the AS4 RT4-R1 third outcome. Consolidation re-pin happens at the DEV->PROD push gate, not per dev-edit."
+    }
+  ]
+}

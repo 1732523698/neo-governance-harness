@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:external_slice_call_entry",
+  "title": "NEO 4.0 P4-AUTONOMY C4 per-slice external-call accounting entry (one JSONL line)",
+  "_home": "<RunRoot>/external_slice_call_ledger.jsonl - append-only, one shared file keyed by slice_id (S1 attempt-ledger pattern); monotonic slice_call_seq per slice; WRITE-AHEAD: the non-refused entry lands BEFORE the process launches; fail-closed read discipline identical to the S1 ledgers",
+  "_status": "DRAFT 4.0-P4-C4 (schema gate pending). Dispatch 3.A.3 SHAPE RULE (R5-F1/R6-F1/R7-F1, one rule) encoded fail-closed via allOf+if/then over the supported keyword set ('not' is outside the installed validator; ABSENT-property is enforced by empty-enum, which fails whenever the property is PRESENT): (1) NON-refused consumed call (refused=false): reason=NONE + post_increment_count + run_ledger_ref_kind=CONSUMED REQUIRED; (2) SUB-CAP refusal (reason=CAP_EXTERNAL_SLICE): NO run-ledger reference AT ALL (post_increment_count and run_ledger_ref_kind must be ABSENT - none exists by design); (3) RUN-CAP refusal (reason=CAP_EXTERNAL_CALLS): the REFUSING post_increment_count REQUIRED + run_ledger_ref_kind=REFUSED (write-ahead evidence of the landed refused run-ledger entry, never presentable as a successful consumption). round_id + bundle_diff_hash are required in ALL shapes (no optional escape hatches; a refusal records WHICH round/bundle attempt was refused - R3-F1 binding for consumed calls, honest END evidence for refusals). No refused entry ever satisfies a GO correlation (derivation requires refused=false AND run_ledger_ref_kind=CONSUMED). LEDGER_FAILURE is deliberately NOT a reason: a ledger failure appends NOTHING (fixture 17).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "slice_id", "slice_call_seq", "refused", "reason", "timestamp_utc", "round_id", "bundle_diff_hash"],
+  "properties": {
+    "run_id": { "type": "string", "minLength": 1 },
+    "slice_id": { "type": "string", "minLength": 1 },
+    "slice_call_seq": { "type": "integer", "minimum": 1 },
+    "refused": { "type": "boolean" },
+    "reason": { "type": "string", "enum": ["NONE", "CAP_EXTERNAL_SLICE", "CAP_EXTERNAL_CALLS"] },
+    "timestamp_utc": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" },
+    "round_id": { "type": "string", "minLength": 1 },
+    "bundle_diff_hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "post_increment_count": { "type": "integer", "minimum": 1 },
+    "run_ledger_ref_kind": { "type": "string", "enum": ["CONSUMED", "REFUSED"] }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "refused": { "const": false } }, "required": ["refused"] },
+      "then": {
+        "required": ["post_increment_count", "run_ledger_ref_kind"],
+        "properties": { "reason": { "const": "NONE" }, "run_ledger_ref_kind": { "const": "CONSUMED" } }
+      }
+    },
+    {
+      "if": { "properties": { "refused": { "const": true } }, "required": ["refused"] },
+      "then": {
+        "properties": { "reason": { "enum": ["CAP_EXTERNAL_SLICE", "CAP_EXTERNAL_CALLS"] } }
+      }
+    },
+    {
+      "if": { "properties": { "reason": { "const": "CAP_EXTERNAL_SLICE" } }, "required": ["reason"] },
+      "then": {
+        "properties": { "post_increment_count": { "enum": [] }, "run_ledger_ref_kind": { "enum": [] } }
+      }
+    },
+    {
+      "if": { "properties": { "reason": { "const": "CAP_EXTERNAL_CALLS" } }, "required": ["reason"] },
+      "then": {
+        "required": ["post_increment_count", "run_ledger_ref_kind"],
+        "properties": { "run_ledger_ref_kind": { "const": "REFUSED" }, "refused": { "const": true } }
+      }
+    },
+    {
+      "if": { "properties": { "reason": { "const": "NONE" } }, "required": ["reason"] },
+      "then": {
+        "properties": { "refused": { "const": false } }
+      }
+    }
+  ]
+}

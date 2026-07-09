@@ -1,0 +1,11 @@
+{
+  "task_output_stale_min": 15,
+  "codex_wall_min": 20,
+  "ledger_open_call_min": 30,
+  "active_run_root_max_age_hours": 24,
+  "temp_tasks_root": "%TEMP%\\claude",
+  "run_roots": [],
+  "scan_depth": 3,
+  "state_dir": ".neo\\scripts\\watchdog\\state",
+  "watch_task_outputs": false
+}

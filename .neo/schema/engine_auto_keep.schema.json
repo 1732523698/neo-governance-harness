@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:engine_auto_keep",
+  "title": "NEO AUTO-MODE engine auto-keep record (NEO_AUTOMODE_DESIGN_v1 rev5 sec 4)",
+  "_home": "<RunRoot>/engine_auto_keep.json (written by the orch_run.ps1 END decision consumer under a VALID AUTO chain on a clean converged GO; RunRoot ONLY - never .neo/)",
+  "_status": "INSTALLED slice-1d 2026-07-08 (spec sha8 4F549F3A; ADDITIVE schema-add recorded with the v7 stop-and-wait ledger). This is a RUN-EVIDENCE record, NOT a gate/freeze/verdict record: the run is honestly 'engine-kept, human review pending' until Raphael's async review appends his own human record. INV-A1: the engine never writes neo:human_gate_ledger; downstream consumers that REQUIRE a human keep (dependent continuation, graduation, PROD promote) refuse this record as a substitute (D-A2 default, NF-A6).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "run_id", "decided_by", "freeze_record_sha256", "autonomy_sha256", "trail_ref", "recorded_at", "notify_outcome", "human_review"],
+  "properties": {
+    "schema_id": { "const": "neo:engine_auto_keep" },
+    "run_id": { "type": "string", "minLength": 1 },
+    "decided_by": { "const": "engine_auto", "description": "Structurally non-confusable with a human principal; a human keep is a neo:human_gate_ledger entry, never this record." },
+    "freeze_record_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$", "description": "The C5-bound clarity freeze record_sha256 (re-read from disk at the END decision site)." },
+    "autonomy_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$", "description": "The sec-3A per-run autonomy record hash (END-site re-hash from disk; two DISTINCT named artifacts - cold-audit LOW-6)." },
+    "trail_ref": { "type": "string", "minLength": 1, "description": "Where the review trail lives for the MANDATORY async human review." },
+    "recorded_at": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" },
+    "notify_outcome": { "type": "string", "minLength": 1, "description": "Outcome of the AUTO-KEPT notification attempt (SENT / DEDUPED / NOT-SENT + reason). A send failure never blocks the keep but IS recorded (convenience never authority)." },
+    "human_review": { "type": "string", "enum": ["pending"], "description": "Always 'pending' at write time; the engine never marks its own review complete." }
+  }
+}

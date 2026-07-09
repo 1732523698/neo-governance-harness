@@ -1,0 +1,304 @@
+{
+  "binding": {
+    "profile_schema_id": "neo:app_profile",
+    "profile_schema_version": "3.0.0",
+    "profile_semver": "2.6.0",
+    "neo_governance_version": "v3.0",
+    "generated_view_is_authoritative": false,
+    "supersedes_markdown_profile": "modules/unified-analytics-rental-platform/NEO_APP_PROFILE.md"
+  },
+  "identity": {
+    "app_slug": "unified-analytics-rental-platform",
+    "app_name": "Unified Analytics Rental Platform"
+  },
+  "governance_semantics": {
+    "records_constraints_not_permission": true,
+    "real_mode_requires_separate_signoff": true,
+    "secret_values_forbidden": true
+  },
+  "boundary_approval": {
+    "boundary_approved": true,
+    "not_approved_for": [
+      "general future real-app execution",
+      "production apply/deploy without separate explicit approval"
+    ],
+    "fixture_proof_never_becomes_real_permission": true,
+    "scoped_approvals": []
+  },
+  "denylist": {
+    "entries": [
+      {
+        "pattern": "backend/src/logic/payments.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/logic/pool.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/logic/charges.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/logic/future-charges.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/logic/status.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/logic/tenants-ledger-combined.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/routes/tenants-ledger-combined.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/logic/future-charges-review.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/logic/futureChargesAutoScheduler.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/logic/reports.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/routes/reports.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/logic/utility-v2-reports.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/routes/utility-v2-reports.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/logic/settlement.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/logic/paymentsAllocationSuggest.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/routes/payments.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/routes/charges.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/logic/dashboard.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/logic/dashboard-utility-v2.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/routes/dashboard.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "backend/src/routes/dashboard-utility-v2.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "frontend/src/app/dashboard/**",
+        "is_glob": true
+      },
+      {
+        "pattern": "frontend/src/components/dashboard/**",
+        "is_glob": true
+      },
+      {
+        "pattern": "frontend/src/hooks/useDashboard.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "frontend/src/hooks/useDashboardTierB.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "frontend/src/lib/guidance/dashboardAlerts.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "frontend/src/i18n/dictionaries/en/dashboard.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "frontend/src/i18n/dictionaries/fr/dashboard.ts",
+        "is_glob": false
+      },
+      {
+        "pattern": "frontend/src/i18n/dictionaries/zh-CN/dashboard.ts",
+        "is_glob": false
+      }
+    ]
+  },
+  "scoped_deny_imports": [
+    {
+      "source": "backend/src/logic/depositsHeld.ts",
+      "forbidden_symbols": [
+        "insertPaymentAndAllocate",
+        "confirmDuplicatePayment",
+        "createPaymentWithExplicitAllocation",
+        "applyAllocationMode",
+        "suggestAllocation",
+        "allocateOldestFirst",
+        "pool",
+        "charges",
+        "future-charges",
+        "paymentsAllocationSuggest",
+        "payments",
+        "index"
+      ],
+      "rationale": "The deposit branch must never import/call payment-pool writers or the charge pipeline. 'index' is the conservative barrel blocker. These symbols legitimately appear in paymentImports.ts (normal payment path); the rule is SCOPED to the deposit branch only."
+    }
+  ],
+  "residue_tokens": [
+    "V26X_",
+    "NEO_SCRATCH_",
+    "DO_NOT_SHIP"
+  ],
+  "i18n": {
+    "style": "ts_namespace_dirs",
+    "dir": "frontend/src/i18n/dictionaries",
+    "locales": [
+      "en",
+      "fr",
+      "zh-CN"
+    ],
+    "dynamic_keys_accepted": false
+  },
+  "charset": {
+    "ascii_globs": [
+      "*.ps1",
+      "*.sql"
+    ]
+  },
+  "migrations": {
+    "migrations_dir": "database/migrations",
+    "rollback_proof_required": true
+  },
+  "dependencies": {
+    "dep_files": [
+      "package.json",
+      "package-lock.json"
+    ]
+  },
+  "risk_tokens": {
+    "auth_tokens": [
+      "owner_user_id",
+      "req.user",
+      "auth.uid",
+      "tenant_id",
+      "organization_id",
+      "service_role",
+      "SECURITY DEFINER",
+      "ROW LEVEL SECURITY"
+    ],
+    "fin_tokens": [
+      "payment",
+      "charge",
+      "rent",
+      "deposit",
+      "ledger",
+      "balance",
+      "payout",
+      "allocation",
+      "settlement",
+      "refund",
+      "invoice",
+      "amount",
+      "cents"
+    ]
+  },
+  "commands": {
+    "named": [
+      {
+        "key": "CMD_TYPECHECK",
+        "command": "npm run typecheck"
+      },
+      {
+        "key": "CMD_BUILD",
+        "command": "npm run build"
+      }
+    ]
+  },
+  "custom_checks": [
+    "oldest_first_allocation_untouched",
+    "locked_dashboard_untouched",
+    "deposit_confirm_makes_zero_payment_pool_rows",
+    "deposits_held_only",
+    "new_tenant_first_transfer_held",
+    "outflow_exact_tenant_stays_ignored"
+  ],
+  "client_money_logic_policy": {
+    "required_evidence_one_of": [
+      "reducer_function_test",
+      "component_unit_test",
+      "playwright_browser"
+    ],
+    "manual_proof_is_degraded": true,
+    "display_only_math_is_financial": true
+  },
+  "fast_lane_policy": {
+    "reduces_evidence_not_authority": true,
+    "eligible_buckets": [
+      "docs_only",
+      "frontend_ui"
+    ],
+    "still_required": [
+      "classifier output",
+      "denylist proof",
+      "typecheck or targeted smoke",
+      "full APP_END_EVIDENCE",
+      "human gate"
+    ]
+  },
+  "risk_tier_policy": {
+    "real_mode_min_tier": "RT3",
+    "classifier_upgrade_only": true
+  },
+  "app_memory": {
+    "product_purpose": "Example application profile used to exercise NEO's app-governance nets. Governance RULES are retained (denylist, tokens, tiers, custom checks); the origin app's development history, git state, and deployment notes were stripped for the public cut.",
+    "current_baseline": "n/a (public cut; development history stripped)",
+    "locked_invariants": [
+      {
+        "invariant": "Oldest-first payment allocation logic must not change.",
+        "source_of_truth": "backend/src/logic/pool.ts + custom_check oldest_first_allocation_untouched",
+        "category": "financial_rule"
+      },
+      {
+        "invariant": "Locked dashboard (components/dashboard/**, app/dashboard/**) is byte-unchanged.",
+        "source_of_truth": "denylist + custom_check locked_dashboard_untouched",
+        "category": "byte_exact_rendering"
+      },
+      {
+        "invariant": "Deposit branch never writes payment-pool rows / never imports the charge pipeline.",
+        "source_of_truth": "scoped_deny_imports (AS17) + custom_check deposit_confirm_makes_zero_payment_pool_rows",
+        "category": "financial_rule"
+      },
+      {
+        "invariant": "business_expenses.tax_category remains the 12-value source of truth.",
+        "source_of_truth": "database schema / migration 030",
+        "category": "schema"
+      },
+      {
+        "invariant": "Tenant-payment core + landlord-payout-confirmations.ts unchanged (called only).",
+        "source_of_truth": "denylist (payments.ts, charges.ts, future-charges.ts, ...)",
+        "category": "financial_rule"
+      }
+    ]
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "unlock_record_schema_id": "neo:unlock_record",
+  "title": "NEO 3.1-C RT4-R1 UNLOCK_RECORD (authorized invariant-preserving edit of a locked path)",
+  "version": "3.1-C-P1S4",
+  "description": "The per-slice REQUEST that asks AS4 (verify_app_slice.ps1) to return PASS-WITH-AUTH for a touch of a denylisted/locked path. The record is NOT the authority: AS4 grants PASS-WITH-AUTH only when this record BINDS to a recorded HUMAN gate in the host-held human-gate ledger (neo:human_gate_ledger) AND every per-path bind holds (artifact class == S3 class map, expected_post_sha == the on-disk re-pin, expected_prior_sha == the denylist recorded_sha when present) AND the named invariant behavioral test PASSED. Any failure keeps AS4 on the FAIL path (fail-closed). PROVISIONAL-DEV: in dev the ledger is not yet under a host-held root-of-trust (section 4.9 / S5) + Option A ACL (S6), so a builder CAN fabricate a ledger entry; the binding is tamper-EVIDENT, not tamper-PROOF. binding.root_of_trust MUST say so and binding.prod_gate MUST assert that RT4-R1 PASS-WITH-AUTH is not trusted in PROD until S5 anchors the ledger. Placed at SliceDir\\UNLOCK_RECORD.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["unlock_record_schema_id", "gate_ref", "authorized_by", "issued_by_gate", "app_slug", "invariant_test_id", "authorizations", "binding"],
+  "properties": {
+    "unlock_record_schema_id": { "const": "neo:unlock_record" },
+    "gate_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Id of the RECORDED HUMAN gate this unlock is bound to. Convention (OQ2): keyed to a roadmap section 8 decision-log id, e.g. '2026-06-30-P1-S3-END-KEEP'. MUST resolve to an entry in the human-gate ledger; an unresolved gate_ref is the self-unlock backdoor and FAILS."
+    },
+    "authorized_by": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The HUMAN principal named on the recorded gate (e.g. 'Raphael'). A role/agent value (NEO_BUILDER/DIRECTOR/AUDITOR/builder/...) is a self-issue and yields NO PASS. Must equal the ledger entry's authorized_by."
+    },
+    "issued_by_gate": {
+      "type": "string",
+      "enum": ["human_end_keep", "human_start_approval"],
+      "description": "Which human gate discharged this. Must equal the ledger entry's gate_kind. 'builder'/'role' is not a valid value (fail-closed)."
+    },
+    "app_slug": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Must equal the app profile identity.app_slug. Prevents a fixture/self-test authorization from authorizing a different app."
+    },
+    "invariant_test_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Id of the behavioral test proving the locked file's invariant survived the additive edit. Must map to a PASSING command_evidence entry (status=pass, exit_code=0). Interlocks with the AS15 invariant_preserved custom-check mode."
+    },
+    "authorizations": {
+      "type": "array",
+      "minItems": 1,
+      "description": "One entry per authorized locked path. Every denylisted path touched by the slice MUST be covered here AND named in the ledger entry's authorized_paths, else AS4 FAILs (scope guard).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "artifact_class", "expected_post_sha"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1, "description": "Repo-relative path of the locked file being edited." },
+          "artifact_class": { "type": "string", "enum": ["implementation", "constraint", "test_harness", "profile_risk", "evidence"], "description": "Declared S3 artifact class; MUST equal what .neo/schema/artifact_classes.json resolves the path to (diff-scoped-to-a-declared-class bound)." },
+          "expected_post_sha": { "type": "string", "description": "Lowercase 64-hex SHA-256 of the file AFTER the invariant-preserving edit (the re-pin), or the literal 'DELETED' for an authorized deletion. MUST equal the on-disk SHA at verify time." },
+          "expected_prior_sha": { "type": "string", "description": "Optional. Lowercase 64-hex SHA-256 of the LOCKED (pre-edit) file. When the denylist entry carries a recorded_sha (OQ1), this is REQUIRED and MUST equal it, proving we unlock the exact locked version." }
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root_of_trust", "prod_gate"],
+      "properties": {
+        "root_of_trust": {
+          "type": "string",
+          "enum": ["provisional-dev", "host-anchored"],
+          "description": "'provisional-dev' = the ledger is a plain repo file the session principal can write (tamper-evident only) -> DEV ONLY. 'host-anchored' = the ledger is under a host-held root-of-trust outside the principal's write scope (section 4.9/S5 + Option A/S6). NEVER claim 'host-anchored' in dev."
+        },
+        "prod_gate": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Assertion that RT4-R1 PASS-WITH-AUTH is NOT trusted in PROD until section 4.9 (S5) anchors the ledger under a host-held root-of-trust + Option A (S6) ACL; the DEV->PROD push gate is the backstop."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+    "anchor_schema_id":  "neo:root_of_trust_anchor",
+    "anchor_id":  "neo:root_of_trust",
+    "custody":  "provisional-dev",
+    "anchor_scope":  "\u003cNEO_ROOT\u003e",
+    "created_at":  "2026-07-09",
+    "note":  "PUBLIC-cut root-of-trust anchor. anchor_scope is a PLACEHOLDER: this in-tree anchor is tamper-EVIDENT only (not tamper-PROOF); authenticity rides the OUT-OF-BAND published root SHA. verify_root_of_trust fails closed until first-run (INSTALL.md) re-cuts the anchor for YOUR install location. Attests the two artifacts that cannot pin themselves: lint_skills.ps1 and .neo\\gates\\HUMAN_GATE_LEDGER.json.",
+    "protected":  [
+                      {
+                          "path":  ".neo\\scripts\\lint_skills.ps1",
+                          "role":  "lint-self",
+                          "sha256":  "f76b28910a95cf83298c4c3bb0005be7c126c584a49baeb21e054f3c075239af"
+                      },
+                      {
+                          "path":  ".neo\\gates\\HUMAN_GATE_LEDGER.json",
+                          "role":  "human-gate-ledger",
+                          "sha256":  "a363ca511dd82c0d07256d9e789ce437dd7e46992baf35f9b49cf9523086adfb"
+                      }
+                  ]
+}

@@ -1,0 +1,43 @@
+{
+  "session_id": "REPLACE_ME",
+  "goal": "REPLACE_ME - one sentence describing the module/scope for this session.",
+  "tier": "T1",
+  "approved_paths": [
+    "modules/REPLACE_ME/**"
+  ],
+  "protected_paths": [
+    ".neo/**",
+    ".claude/**",
+    "**/.env*",
+    "**/*secret*",
+    "**/*credential*"
+  ],
+  "approved_operations": ["create", "edit", "run_test", "run_typecheck", "snapshot"],
+  "destructive_ops": [],
+  "budget": {
+    "unit": "api_usd",
+    "limit": 0,
+    "manual_pause_threshold": 0,
+    "provider_spend_cap_configured": false
+  },
+  "model_routing_policy": {
+    "mechanical": "haiku",
+    "moderate_judgment": "sonnet",
+    "hard_logic_or_audit": "opus"
+  },
+  "test_plan": [
+    "REPLACE_ME - exact test command, e.g. npm test --silent"
+  ],
+  "fresh_audit_required_when": ["end_gate"],
+  "state_surfaces": ["filesystem"],
+  "volatile_paths_ignored_in_residue": [],
+  "external_accounts_registry": [],
+  "residue_keep_paths": [],
+  "snapshot_limits": { "max_files": 5000, "max_total_mb": 500, "max_single_file_mb": 50 },
+  "stop_conditions": ["scope_breach", "budget_breach", "ambiguity", "external_boundary"],
+  "secret_redaction": {
+    "enabled": true,
+    "scan_targets": ["diffs", "logs", "checkpoint", "reports"]
+  },
+  "graduation_target": null
+}

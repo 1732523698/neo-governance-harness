@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:project_spec",
+  "title": "NEO 4.0 PROJECT_SPEC",
+  "_home": "./program/PROJECT_SPEC.json  (JSON authoritative per Q1; optional ./program/PROJECT_SPEC.md is human commentary only)",
+  "_status": "INSTALLED 4.0-P3-A (from the KEPT 4.0 Session-0 draft). Live spine schema. Spec-FIRST artifact (D9 / v4 5.7): authored and gated before any constraint/architecture/impl.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["spec_id", "spec_version", "intent", "in_scope", "out_of_scope", "acceptance_criteria", "_provenance"],
+  "properties": {
+    "spec_id": { "type": "string", "minLength": 1 },
+    "spec_version": { "type": "string" },
+    "intent": { "type": "string", "description": "What the whole app is for, in plain language." },
+    "in_scope": { "type": "array", "items": { "type": "string" } },
+    "out_of_scope": { "type": "array", "items": { "type": "string" }, "description": "Explicit non-goals; guards scope creep at dispatch time." },
+    "acceptance_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "statement", "verifiable_by"],
+        "properties": {
+          "id": { "type": "string" },
+          "statement": { "type": "string" },
+          "verifiable_by": { "type": "string", "description": "How this criterion is checked (test id / harness ref). Ties spec to the independent harness (D9)." }
+        }
+      }
+    },
+    "assumptions": { "type": "array", "items": { "type": "string" } },
+    "open_questions": { "type": "array", "items": { "type": "string" }, "description": "Unresolved spec ambiguity; a non-empty high-impact entry is a rollover/stop trigger (D5/D7)." },
+    "_provenance": { "$ref": "neo:common_provenance_envelope" }
+  }
+}

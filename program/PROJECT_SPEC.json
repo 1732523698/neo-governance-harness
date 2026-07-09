@@ -1,0 +1,169 @@
+{
+  "spec_id": "ems.project_spec.v1",
+  "spec_version": "1.0.0-P4-draft",
+  "intent": "EMS is a cloud web app for the back-office of ONE wholesale/distribution business: products and multi-spec inventory, customers, sales orders, payments and customer credit (A/R), returns and voids, printed business documents, role-scoped staff permissions, and a full audit trail. It must be reliable enough to be trusted with the business's money and stock. It is sold as a subscription and its access is gated by an activation code. It is explicitly single-business (NOT multi-tenant) and carries nothing from any prior project.",
+  "in_scope": [
+    "Products: code, name, one primary image plus additional images, spec/model, default sale price, cost price, stock qty, low-stock alert threshold.",
+    "Multi-spec inventory (variants): the same product in different sizes/models/wattages/thicknesses is tracked as SEPARATE stock; each variant carries its own stock qty and can carry its own price/cost.",
+    "Multi-warehouse data model: one main warehouse in v1, schema ready for more later; NO multi-warehouse UI in v1.",
+    "Quantities support BOTH whole units and decimal quantities per a product/variant unit-of-measure (e.g. EA vs metre/kg) [DECIDED: both].",
+    "Customers: company name, contact, phone, notes, plus a view of that customer's order history and current unpaid balance.",
+    "Sales orders: one order with many product lines; each line's sale price is editable; discount vs default is shown. Physical stock moves through an explicit RESERVE->COMMIT->FULFILL lifecycle with a SINGLE owner of on-hand movement: an open quotation RESERVES (availability = on_hand - reserved; on_hand unchanged), confirming an order COMMITS (decrements on_hand EXACTLY ONCE), and the delivery note FULFILLS (records goods physically leaving; does NOT decrement again). If the reserved/committed state of a movement is unknown or unresolvable the movement is REFUSED (fail-closed), never applied twice or blind [DECIDED: decrement on confirm; delivery note is doc+marker -> see DA-STOCKMOVE].",
+    "Payments and credit: accept cash and debit; unpaid/partly-paid orders appear as customer credit/owed (A/R); payments are tied to specific orders.",
+    "Returns and void: a return puts stock back and adjusts the books; a mistaken order is VOIDED (kept for record), never hard-deleted.",
+    "Returns on unpaid/partly-paid orders resolve as EITHER a credit note (reduces debt) OR a cash refund, user-selectable at return time [DECIDED: both, user-selectable].",
+    "Printed documents: quotation, delivery note, invoice, receipt.",
+    "Quotations HOLD/RESERVE stock while open and release the reservation on expiry/cancel/convert [DECIDED: quotes reserve stock].",
+    "Delivery note is BOTH a printable document AND the FULFILL/shipment marker recording that goods have physically left; it does NOT re-decrement stock (on_hand was already COMMITTED exactly once at order-confirm) [DECIDED: both; fulfillment marker, no second stock movement -> see DA-STOCKMOVE].",
+    "Permissions: business owner (boss) sees cost prices, profit, and all reports; staff sees only products/customers/orders/stock and MAY see customers' unpaid balances [DECIDED: staff may see unpaid balances].",
+    "Staff MAY edit line sale prices, take payments, void orders, and process returns, subject to optional configurable guardrails (below-cost block / max-discount / credit-limit override) [DECIDED: staff may do all four].",
+    "Audit trail: record who created an order, changed a price, took a payment, did a return, or performed any correction, with timestamp and (for corrections) reason and before/after values.",
+    "Cloud deployment usable from phone and computer; data stored in the cloud; LOCAL-FIRST development then staging then cloud production [DECIDED: local-first].",
+    "Subscription ACTIVATION GATE (access gate / kill-switch, NOT DRM): the business account cannot use the app unless activated with a valid activation code; permanent (revocable) and time-limited (expiring) codes; codes issued and revoked only by the software owner/admin; codes handled credential-grade.",
+    "CORRECTABLE FINANCIALS: every financial record (charges, payments, pending items, balances, invoices, credits, refunds, deposits, allocations) is correctable via controlled, permission-gated, reason-required, confirmed, fully-audited actions (void, edit/revise, reverse, re-allocate, adjust, and delete only where provably safe) that preserve the original value and keep all downstream numbers consistent.",
+    "Money: exact integer-cent arithmetic, CAD; Canadian sales tax CONFIGURABLE not hardcoded; province Ontario in v1 (13% HST); presentation supports BOTH tax-exclusive and tax-inclusive modes as a configured choice.",
+    "Document numbering is GAPLESS per document type [DECIDED: gapless]."
+  ],
+  "out_of_scope": [
+    "Multi-company / multi-tenant / any tenant/lease/rent/rental concept.",
+    "Anything carried from any other project.",
+    "DRM / anti-copy / copy-protection.",
+    "In-app billing / payment-processor integration.",
+    "Barcode scanning.",
+    "Spreadsheet / CSV export.",
+    "Auto-reorder / purchasing automation.",
+    "Advanced reporting / BI.",
+    "Multi-warehouse UI (data model only in v1).",
+    "Marketplace / storefront.",
+    "Email / SMS automation.",
+    "Phone-home / telemetry / license call-out.",
+    "Multi-currency (CAD only in v1).",
+    "Full bilingual UI (English-first in v1; bilingual later)."
+  ],
+  "acceptance_criteria": [
+    {
+      "id": "AC-GATE-1",
+      "statement": "With no code, an expired code, a revoked code, a blank code, or an unrecognized code, the business account CANNOT reach any business function; access is BLOCKED by default (fail-closed). If the activation verifier itself THROWS, TIMES OUT, or its dependency (the activation store/DB) is UNREACHABLE or otherwise unresolvable, access likewise FAILS CLOSED (BLOCKED): a verification that cannot positively prove a valid, unexpired, unrevoked code is a denial, never a pass-through.",
+      "verifiable_by": "harness:activation_gate_fixture (error-injected states none|expired|revoked|blank|unknown|valid|verifier_throw|verifier_timeout|store_unreachable all asserted; only 'valid' unblocks; every throw/timeout/unreachable case asserts BLOCKED)"
+    },
+    {
+      "id": "AC-GATE-2",
+      "statement": "Activation codes are never returned to any client, never written to logs, and never committed; only issue/revoke by the software owner/admin can create or invalidate them.",
+      "verifiable_by": "harness:secret_exposure_scan + role_matrix_fixture (admin-only issue/revoke)"
+    },
+    {
+      "id": "AC-ROLE-1",
+      "statement": "A staff-role principal cannot read cost price or profit through ANY API, query, export, or document; the value is absent at the data layer, not merely hidden in the UI.",
+      "verifiable_by": "harness:rls_cost_hidden_fixture (staff token over every read path asserts no cost/profit field returned)"
+    },
+    {
+      "id": "AC-ROLE-2",
+      "statement": "A staff-role principal cannot reach any backend/database/admin surface (no direct DB, no admin API, no activation-admin).",
+      "verifiable_by": "harness:role_matrix_fixture (staff denied on admin+db+activation surfaces)"
+    },
+    {
+      "id": "AC-STOCK-1",
+      "statement": "Under N concurrent confirmations against the same variant, total stock decremented equals stock sold and never goes below zero (no oversell, no lost update).",
+      "verifiable_by": "harness:concurrency_oversell_fixture (parallel confirm; final stock reconciles; oversell rejected)"
+    },
+    {
+      "id": "AC-PAY-1",
+      "statement": "Under concurrent payments against the same order, total applied never exceeds the amount owed (no double-charge / over-allocation).",
+      "verifiable_by": "harness:concurrency_overpay_fixture"
+    },
+    {
+      "id": "AC-RET-1",
+      "statement": "Returns and refunds are capped on two INDEPENDENT axes: cumulative GOODS returned can never exceed goods SOLD, and cumulative CASH refunded can never exceed cash actually RECEIVED for the order. Returned value above cash received resolves as a credit-note / debt-reduction, never as cash out. If the sold or cash-received basis is unknown or unresolvable the refund is REFUSED (fail-closed). No over-return, no over-refund.",
+      "verifiable_by": "harness:return_refund_cap_fixture (goods-returned<=sold AND cash-refunded<=cash-received asserted independently; excess-over-cash routed to credit-note, never cash)"
+    },
+    {
+      "id": "AC-MONEY-1",
+      "statement": "For every order, the amount shown on screen equals the amount stored equals the amount printed on the document, to the cent, including Ontario tax and correct rounding.",
+      "verifiable_by": "harness:money_roundtrip_fixture (shown==stored==printed across tax-inclusive and tax-exclusive modes)"
+    },
+    {
+      "id": "AC-CORR-1",
+      "statement": "Every financial record can be corrected only through a controlled action that is permission-gated, requires a reason, is confirmed before applying, is fully audited, preserves the original value, and leaves all downstream numbers (invoice totals, stock, customer balance, reports) consistent; no silent or direct-DB edit path exists.",
+      "verifiable_by": "harness:correction_lifecycle_fixture (each of void/reverse/re-allocate/adjust/edit asserts reason+audit+original-preserved+downstream-consistent)"
+    },
+    {
+      "id": "AC-CORR-2",
+      "statement": "An issued document is never silently mutated; a correction produces a NEW superseding document that references the original, and the original remains retrievable.",
+      "verifiable_by": "harness:superseding_document_fixture (original immutable; supersede link present)"
+    },
+    {
+      "id": "AC-CORR-3",
+      "statement": "A correction that partially commits and is then RETRIED is idempotent: the adjusting/reversing entry is posted EXACTLY ONCE (guarded by an idempotency key / dedup), never double-posted, and a retry after a crash mid-commit converges to the same single adjustment with all downstream numbers consistent. If exactly-once posting cannot be guaranteed the correction is REFUSED (fail-closed) rather than risk a double-post.",
+      "verifiable_by": "harness:correction_idempotency_fixture (partial-commit then retry asserts a single adjusting entry; no double-post; downstream numbers consistent)"
+    },
+    {
+      "id": "AC-VOID-1",
+      "statement": "A voided order is retained for record (not hard-deleted) and its stock/financial effects are reversed exactly once.",
+      "verifiable_by": "harness:void_idempotency_fixture"
+    },
+    {
+      "id": "AC-NUM-1",
+      "statement": "Document numbers within a type are gapless: no gaps and no duplicates even under concurrency and rollback.",
+      "verifiable_by": "harness:gapless_numbering_fixture (parallel issue + forced rollback; sequence dense and unique)"
+    },
+    {
+      "id": "AC-CREDIT-1",
+      "statement": "An order that would push a customer over their credit limit is BLOCKED (hard stop), overridable only by a permitted role with an audited override.",
+      "verifiable_by": "harness:credit_limit_block_fixture"
+    },
+    {
+      "id": "AC-AUDIT-1",
+      "statement": "For every create/price-change/payment/return/correction the audit trail records who, what, when, and (for corrections) why and before/after; audit records are append-only.",
+      "verifiable_by": "harness:audit_trail_fixture (append-only; required fields present per action type)"
+    }
+  ],
+  "assumptions": [
+    "Single legal business entity; one main warehouse operational in v1.",
+    "Deployment target is Next.js (App Router) + TypeScript with Supabase (Postgres + Auth + Storage) as the REAFFIRMED-BUT-RATIFIABLE stack (see DESIGN_AUTHORITY_DECISION_SHEET DA-STACK); any managed Postgres with row-level authorization satisfies the same constraints.",
+    "Ontario tax = 13% HST in v1; rates and mode are configuration, not code.",
+    "Independent financial audit (Raphael + external) gates trust in any AI-authored financial logic before it is relied upon.",
+    "All development begins local, then staging, then cloud production."
+  ],
+  "open_questions": [
+    "DA-COSTBASIS: profit cost basis (cost-at-sale-time vs weighted-average vs FIFO) is UNPICKED; proceeding on a SWAPPABLE-basis default with the choice confirmed at a later gate. High-impact but not blocking planning.",
+    "DA-TAXMODE: tax-inclusive vs tax-exclusive default presentation for Ontario (both supported; default to confirm).",
+    "DA-STAFFGUARD: whether the below-cost block and max-discount cap are ON by default and at what threshold.",
+    "DA-CREDITOVERRIDE: which role may override a credit-limit block.",
+    "DA-QUOTEEXPIRY: quotation validity/expiry window that releases the stock reservation.",
+    "DA-TAXEXEMPT: whether tax-exempt customers are supported in v1.",
+    "DA-DECIMALPREC: decimal precision per unit-of-measure for decimal-quantity products."
+  ],
+  "_provenance": {
+    "artifact_id": "ems.project_spec.v1",
+    "artifact_class": "evidence",
+    "schema_id": "neo:project_spec",
+    "schema_version": "4.0-P3-A",
+    "producer_identity": {
+      "role": "neo-planning-subsession",
+      "model_class": "strong_producer",
+      "model_name": "claude-opus-4-8"
+    },
+    "validator_identity": {
+      "role": "engine-test-neoschema",
+      "model_class": "validator",
+      "model_name": null,
+      "not_applicable_reason": null
+    },
+    "created_at": "2026-07-04T16:00:00Z",
+    "updated_at": "2026-07-04T18:00:00Z",
+    "content_hash": {
+      "algo": "sha256",
+      "value": "37a40b613340c117e450a5d177c7b4797b0dd8bcfae49654b27eed78afacbbe5"
+    },
+    "scope_boundary": {
+      "declared_paths": [
+        "./NEO_SESSION/40-p4-ems-planning-2026-07-04/"
+      ],
+      "declared_surfaces": [
+        "filesystem"
+      ]
+    },
+    "source_input_packets": [],
+    "gate_ref": "hg:40-p4-ems-planning-2026-07-04:START"
+  }
+}

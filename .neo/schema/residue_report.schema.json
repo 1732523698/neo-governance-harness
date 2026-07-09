@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "neo:residue_report",
+  "title": "NEO Residue Report (verifier_residue_report.json / residue_manifest.json)",
+  "description": "Two-layer residue evidence. Layer 1 = creation manifest. Layer 2 = before/after state-surface snapshot diff. A pass requires manifest cleanup + clean diff on every declared surface + a clean second run.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["session_id", "manifest_cleanup_complete", "state_surfaces", "snapshots", "second_run_pass"],
+  "properties": {
+    "session_id": { "type": "string", "minLength": 1 },
+    "manifest_cleanup_complete": {
+      "type": "boolean",
+      "description": "Layer 1: every artifact the verifier intentionally created has been removed."
+    },
+    "created_manifest": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Layer 1 list: files / rows / objects / account-state the verifier created."
+    },
+    "state_surfaces": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["filesystem", "database", "object_storage", "external_account"] },
+      "minItems": 1,
+      "description": "Must equal session_contract.state_surfaces. C5 fails on mismatch."
+    },
+    "snapshots": {
+      "type": "object",
+      "description": "Layer 2: one entry per declared surface. Each must be diff_clean=true (ignoring volatile_paths).",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["before", "after", "diff_clean"],
+        "properties": {
+          "before": { "type": "string", "description": "Path/ref to baseline snapshot artifact." },
+          "after": { "type": "string", "description": "Path/ref to final snapshot artifact." },
+          "diff_clean": { "type": "boolean" },
+          "diff_detail": { "type": "string" }
+        }
+      }
+    },
+    "volatile_paths_ignored": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "approved_retained_artifacts": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Created files deliberately kept because they match contract.residue_keep_paths. These are declared, not residue. Their presence does NOT make diff_clean false."
+    },
+    "second_run_pass": {
+      "type": "boolean",
+      "description": "A second run from a clean state passed again (no carried-over pollution)."
+    }
+  }
+}

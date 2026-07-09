@@ -1,0 +1,276 @@
+{
+  "register_id": "ems.risk_register.v1",
+  "register_version": "1.0.0-P4-draft",
+  "risks": [
+    {
+      "id": "R-GATE",
+      "area": "security",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-ACTIVATION-SECRETS",
+      "area": "security",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-COST-PROFIT-HIDING",
+      "area": "security",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-STAFF-DB-ADMIN-BARRING",
+      "area": "security",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-AUDIT-TRAIL-INTEGRITY",
+      "area": "security",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-ORDER-TXN-CONCURRENCY",
+      "area": "payment",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-PAYMENTS-AR-ALLOCATION",
+      "area": "payment",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-CREDIT-LIMIT-ENFORCE",
+      "area": "payment",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-RETURNS-REFUND-CAP",
+      "area": "payment",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-CORRECTABLE-FINANCIALS",
+      "area": "payment",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-MONEY-TAX-EXACTNESS",
+      "area": "payment",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-VOID-NO-DELETE",
+      "area": "payment",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-GAPLESS-DOC-NUMBERING",
+      "area": "payment",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-ISSUED-DOC-IMMUTABILITY",
+      "area": "payment",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-EMS-CONSTRAINT-PACKAGE",
+      "area": "constraints",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-EMS-TEST-HARNESS",
+      "area": "harness_tests",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-EMS-RISK-PROFILE",
+      "area": "risk_profile",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-EMS-ARTIFACT-CLASSIFICATION",
+      "area": "artifact_classification",
+      "risk_class": "medium",
+      "never_batchable": true,
+      "audit_tier": "isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-SCHEMA-DATA-MIGRATION",
+      "area": "data_migration",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-CLOUD-DEPLOY",
+      "area": "deploy",
+      "risk_class": "medium",
+      "never_batchable": true,
+      "audit_tier": "isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-DEV-TO-PROD-PROMOTION",
+      "area": "prod_export_promotion",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-RELEASE-AUTHENTICITY",
+      "area": "release_authenticity",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-ROOT-OF-TRUST",
+      "area": "root_of_trust",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-STOCK-RESERVATION-QUOTES",
+      "area": "payment",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-PRODUCT-VARIANT-CATALOG",
+      "area": "general_feature",
+      "risk_class": "low",
+      "never_batchable": false,
+      "audit_tier": "lightweight",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-CUSTOMER-CRUD-HISTORY",
+      "area": "general_feature",
+      "risk_class": "low",
+      "never_batchable": false,
+      "audit_tier": "lightweight",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-DOCUMENT-RENDER-PRINT",
+      "area": "security",
+      "risk_class": "high",
+      "never_batchable": true,
+      "audit_tier": "full_isolated",
+      "explicit_downgrade": null
+    },
+    {
+      "id": "R-BOSS-REPORTING-UI",
+      "area": "general_feature",
+      "risk_class": "medium",
+      "never_batchable": false,
+      "audit_tier": "isolated",
+      "explicit_downgrade": null
+    }
+  ],
+  "_provenance": {
+    "artifact_id": "ems.risk_register.v1",
+    "artifact_class": "profile_risk",
+    "schema_id": "neo:risk_register",
+    "schema_version": "4.0-P3-A",
+    "producer_identity": {
+      "role": "neo-planning-subsession",
+      "model_class": "strong_producer",
+      "model_name": "claude-opus-4-8"
+    },
+    "validator_identity": {
+      "role": "engine-test-neoschema",
+      "model_class": "validator",
+      "model_name": null,
+      "not_applicable_reason": null
+    },
+    "created_at": "2026-07-04T16:15:00Z",
+    "updated_at": "2026-07-04T18:30:00Z",
+    "content_hash": {
+      "algo": "sha256",
+      "value": "5a3f2fae32cd7a44946ce1f40ddbbf95049ade91cb3712f50aaa1ebb396cb3f6"
+    },
+    "scope_boundary": {
+      "declared_paths": [
+        "./NEO_SESSION/40-p4-ems-planning-2026-07-04/"
+      ],
+      "declared_surfaces": [
+        "filesystem"
+      ]
+    },
+    "source_input_packets": [
+      {
+        "packet_id": "ems.project_spec.v1",
+        "content_hash": "37a40b613340c117e450a5d177c7b4797b0dd8bcfae49654b27eed78afacbbe5"
+      },
+      {
+        "packet_id": "ems.constraint_package.v1",
+        "content_hash": "2ec03b3e9fdfdb218c181b6f0882c84eb15b4b3456ee355cfacb0934e73bc985"
+      },
+      {
+        "packet_id": "ems.architecture.v1",
+        "content_hash": "8af47bc83012e74825be42d21ef7d988cea0b40231bde80ce72998f72c413b1c"
+      }
+    ],
+    "gate_ref": "hg:40-p4-ems-planning-2026-07-04:START"
+  }
+}
